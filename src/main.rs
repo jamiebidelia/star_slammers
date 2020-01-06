@@ -31,6 +31,7 @@ mod input;
 mod mode;
 mod inventory_screen;
 
+mod rng;
 
 fn main()
 {
