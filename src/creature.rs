@@ -1,11 +1,23 @@
-use crate::item;
+#![doc(html_no_source)]
 
+use crate::item;
+use crate::rng;
+use crate::skill;
+
+// //! This module encompasses a creature:  the player, NPCs, and monsters qualify as creatures.
+
+
+/// The Creature represents all entities that can move and act.
 pub struct Creature
 {
     name                  : String,
     x_pos                 : u32,
     y_pos                 : u32,
 
+    creativity            : u32,
+    focus                 : u32,
+    memory                : u32,
+    
     max_health            : u32,
     current_health        : u32,
 
@@ -35,6 +47,10 @@ impl Creature
             name                  : "Unknown".to_string(),
             x_pos                 : 0,
             y_pos                 : 0,
+
+            creativity            : 0,
+            focus                 : 0,
+            memory                : 0,
             
             max_health            : 0,
             current_health        : 0,
@@ -105,5 +121,10 @@ impl Creature
     {
         self.player_control = new_player_control;
     }
-    
+
+/*    pub fn make_skill_check(&self, target : &mut Creature, the_skill : skill::Skill, the_rng : &mut rng::PseudoRandom) -> bool
+    {
+        return false;
+    }
+  */  
 } // End Creature Implementation.

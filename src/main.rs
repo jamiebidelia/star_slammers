@@ -30,9 +30,10 @@ mod console;
 mod input;
 mod mode;
 mod inventory_screen;
-
 mod rng;
+mod skill;
 
+/// Starts the game
 fn main()
 {
     let mut game_mode        = mode::Mode::Adventure;
@@ -100,6 +101,7 @@ fn main()
     shut_down_game();
 } // End Main.
 
+/// In Adventure Mode, each iteration is a step in the game loop.  We draw the screen, take an action, and update the game camera.
 fn adventure_iter(game_window       : &pancurses::Window,
                   game_camera       : &mut camera::Camera,
                   tile_map          : &mut tile_map::TileMap,
@@ -126,7 +128,7 @@ fn adventure_iter(game_window       : &pancurses::Window,
     camera::update_camera(game_camera, game_window, &mut creatures_on_map[0], tile_map);
 } // End adventure_iter.
 
-
+/// In Inventory Mode, each iteration handles player input for changing gear, checking stats, etc.
 fn inventory_iter(game_window        : &pancurses::Window,
                   mut player         : &mut creature::Creature,
                   mut console_buffer : &mut Vec<String>)
@@ -138,6 +140,7 @@ fn inventory_iter(game_window        : &pancurses::Window,
     
 } // End inventory_iter.
 
+/// Gets PanCurses up and running and accepts keyboard input.
 fn initialize_game() -> pancurses::Window
 {
     let game_window = pancurses::initscr(); // Create a new window.
@@ -149,12 +152,14 @@ fn initialize_game() -> pancurses::Window
     game_window				    // Return the window we initialized.     
 }
 
+/// Ends the Pancurses Window.
 fn shut_down_game()
 {
     pancurses::use_default_colors();        // Make sure the terminal colors are reset.
     pancurses::endwin();	            // End the window when we are done.
 }
 
+/// Shuts the game down properly before causing an assertion.
 fn blow_up()
 {
     shut_down_game();                       // Shut down the pancurses window.
