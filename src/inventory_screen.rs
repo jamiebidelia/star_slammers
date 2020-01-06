@@ -2,7 +2,6 @@
 extern crate pancurses;
 use crate::action;
 use crate::creature;
-use crate::tile_map;
 
 pub fn process_keyboard(game_window : &pancurses::Window) -> action::Action
 {
