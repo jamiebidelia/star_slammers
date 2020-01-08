@@ -16,13 +16,15 @@ pub enum DefenseTarget
     Health,
     Fatigue,
     Sanity,
+    None,
     Error
 }
 
 /// As effects are added to the game, they must be added to this enumeration.
 pub enum Effect
 {
-    None
+    None,
+    Error
 }
 
 /// The Skill packages together all attributes necessary to parse or use a skill.
@@ -45,14 +47,14 @@ impl Skill
     {
         Skill
         {
-            name        : "N/A",
+            name        : "N/A".to_string(),
             range       : 0,
-            skill1      : SkillTarget::None,
-            skill2      : SkillTarget::None,
-            skill3      : SkillTarget::None,
-            defense     : DefenseTarget::None,
-            description : "N/A",
-            effect      : None
+            skill1      : SkillTarget::Error,
+            skill2      : SkillTarget::Error,
+            skill3      : SkillTarget::Error,
+            defense     : DefenseTarget::Error,
+            description : "N/A".to_string(),
+            effect      : Effect::Error
         }
     }
 }

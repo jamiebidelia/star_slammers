@@ -6,3 +6,4 @@ edition = "2018"
 
 [dependencies]
 pancurses = "0.16"
+lua       = "0.0.10"

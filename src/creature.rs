@@ -122,9 +122,12 @@ impl Creature
         self.player_control = new_player_control;
     }
 
-/*    pub fn make_skill_check(&self, target : &mut Creature, the_skill : skill::Skill, the_rng : &mut rng::PseudoRandom) -> bool
+    pub fn use_skill(&self,
+                     target    : &mut Creature,
+                     the_skill : skill::Skill,
+                     the_rng   : &mut rng::PseudoRandom) -> bool
     {
         return false;
     }
-  */  
+ 
 } // End Creature Implementation.
