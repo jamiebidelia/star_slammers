@@ -2,7 +2,7 @@
 //! This module handles skill interpretation and use.
 
 /// A skill's target values can be Creativity, Focus, or Memory. Error is for validation.
-pub enum SkillTarget
+pub enum StatTarget
 {
     Creativity,
     Focus,
@@ -10,12 +10,12 @@ pub enum SkillTarget
     Error
 }
 
-/// A skill's defence target can be Health, Fatigue, Sanity, or None.  Error is for valdiation.
+/// A skill's defence target can be Evasion, Endurance, Nullification, or None.  Error is for valdiation.
 pub enum DefenseTarget
 {
-    Health,
-    Fatigue,
-    Sanity,
+    Evasion,
+    Endurance,
+    Nullification,
     None,
     Error
 }
@@ -24,6 +24,9 @@ pub enum DefenseTarget
 pub enum Effect
 {
     None,
+    DamageHealth,
+    DamageStamina,
+    DamageSanity,
     Error
 }
 
@@ -32,9 +35,9 @@ pub struct Skill
 {
     name        : String,
     range       : u32,
-    skill1      : SkillTarget,
-    skill2      : SkillTarget,
-    skill3      : SkillTarget,
+    stat1       : StatTarget,
+    stat2       : StatTarget,
+    stat3       : StatTarget,
     defense     : DefenseTarget,
     description : String,
     effect      : Effect
@@ -49,15 +52,56 @@ impl Skill
         {
             name        : "N/A".to_string(),
             range       : 0,
-            skill1      : SkillTarget::Error,
-            skill2      : SkillTarget::Error,
-            skill3      : SkillTarget::Error,
+            stat1       : StatTarget::Error,
+            stat2       : StatTarget::Error,
+            stat3       : StatTarget::Error,
             defense     : DefenseTarget::Error,
             description : "N/A".to_string(),
             effect      : Effect::Error
         }
     }
-}
+
+    pub fn GetName(&self) -> &String
+    {
+        return &self.name;
+    }
+    
+    pub fn GetRange(&self) -> &u32
+    {
+        return &self.range;
+    }
+
+    pub fn GetStat1(&self) -> &StatTarget
+    {
+        return &self.stat1;
+    }
+    
+    pub fn GetStat2(&self) -> &StatTarget
+    {
+        return &self.stat2;
+    }
+    
+    pub fn GetStat3(&self) -> &StatTarget
+    {
+        return &self.stat3;
+    }
+    
+    pub fn GetDefense(&self) -> &DefenseTarget
+    {
+        return &self.defense;
+    }
+    
+    pub fn GetDescription(&self) -> &String
+    {
+        return &self.description;
+    }
+    
+    pub fn GetEffect(&self) -> &Effect
+    {
+        return &self.effect;
+    }
+
+} // end impl Skill
 
 
 

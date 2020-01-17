@@ -59,7 +59,7 @@ impl PseudoRandom
 
     /// roll_skill_check takes in three stats to use, and a defense to roll against.  It produces a boolean determining if the skill_check succeeded or failed.
     /// Use of this function modifies the seed.
-    fn roll_skill_check(&mut self, stat1 : u32, stat2 : u32, stat3 : u32, defense : u32) -> bool
+    pub fn roll_skill_check(&mut self, stat1 : u32, stat2 : u32, stat3 : u32, defense : u32) -> bool
     {
         let target_num = stat1 + stat2 + stat3 - defense;
         let mut ret_val = false;
