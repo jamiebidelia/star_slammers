@@ -1,9 +1,7 @@
 use crate::tile;
 
 use std::io::prelude::*;
-use std::io::BufReader;
 use std::fs::File;
-use std::error::Error;
 
 pub const MAX_LEN_X : usize = 256;
 pub const MAX_LEN_Y : usize = 256;

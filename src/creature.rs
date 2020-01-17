@@ -1,37 +1,40 @@
-use crate::item;
+#![doc(html_no_source)]
 
+use crate::item;
+use crate::rng;
+use crate::skill;
+
+// //! This module encompasses a creature:  the player, NPCs, and monsters qualify as creatures.
+
+
+/// The Creature represents all entities that can move and act.
 pub struct Creature
 {
-    name             : String,
-    x_pos            : u32,
-    y_pos            : u32,
+    name                  : String,
+    x_pos                 : u32,
+    y_pos                 : u32,
 
-    max_health       : u32,
-    current_health   : u32,
-
-    max_mana         : u32,
-    current_mana     : u32,
-
-    max_stamina      : u32,
-    current_stamina  : u32,
+    creativity            : u32,
+    focus                 : u32,
+    memory                : u32,
     
-    armor_class      : u32,
+    max_health            : u32,
+    current_health        : u32,
+
+    max_fatigue           : u32,
+    current_fatigue       : u32,
+
+    max_sanity            : u32,
+    current_sanity        : u32,
     
-    strength         : u32,
-    dexterity        : u32,
-    constitution     : u32,
-    intelligence     : u32,
-    wisdom           : u32,
-    charisma         : u32,
-
-    experience_have  : u32,
-    experience_worth : u32,
-
-    image            : char,
-
-    player_control   : bool,
+    evasion               : u32,
+    endurance             : u32,
+    nullification         : u32,
     
-    inventory        : Vec<item::Item>
+    experience_have       : u32,
+    image                 : char,
+    player_control        : bool,
+    inventory             : Vec<item::Item>
 }
 
 impl Creature
@@ -40,50 +43,45 @@ impl Creature
     {
         Creature
         {
-            name             : "Unknown".to_string(),
             
-            x_pos            : 0,
-            y_pos            : 0,
+            name                  : "Unknown".to_string(),
+            x_pos                 : 0,
+            y_pos                 : 0,
 
-            max_health       : 0,
-            current_health   : 0,
-        
-            max_mana         : 0,
-            current_mana     : 0,
-
-            max_stamina      : 0,
-            current_stamina  : 0,
-        
-            armor_class      : 0,
-        
-            strength         : 0,
-            dexterity        : 0,
-            constitution     : 0,
-            intelligence     : 0,
-            wisdom           : 0,
-            charisma         : 0,
-        
-            experience_have  : 0,
-            experience_worth : 0,
-
-            image            : '?',
-        
-            inventory        : Vec::new(),
-
-            player_control   : false,
+            creativity            : 0,
+            focus                 : 0,
+            memory                : 0,
+            
+            max_health            : 0,
+            current_health        : 0,
+            
+            max_fatigue           : 0,
+            current_fatigue       : 0,
+            
+            max_sanity            : 0,
+            current_sanity        : 0,
+            
+            evasion               : 0,
+            endurance             : 0,
+            nullification         : 0,
+            
+            experience_have       : 0,
+            image                 : '?',
+            player_control        : false,
+            inventory             : Vec::new(),
         }
-    } // End new.
+    } // End new
 
     pub fn get_name(&self) -> &String
     {
         &self.name
     }
-
+    
     pub fn set_name(&mut self, new_name : String)
     {
         self.name = new_name;
     }
-
+    
     pub fn get_x_pos(&self) -> &u32
     {
         &self.x_pos
@@ -102,156 +100,6 @@ impl Creature
     pub fn set_y_pos(&mut self, new_y_pos : u32)
     {
         self.y_pos = new_y_pos;
-    }
-
-    pub fn get_max_health(&self) -> &u32
-    {
-        &self.max_health
-    }
-
-    pub fn set_max_health(&mut self, new_max_health : u32)
-    {
-        self.max_health = new_max_health;
-    }
-
-    pub fn get_current_health(&self) -> &u32
-    {
-        &self.current_health
-    }
-
-    pub fn set_current_health(&mut self, new_current_health : u32)
-    {
-        self.current_health = new_current_health;
-    }
-
-    pub fn get_max_mana(&self) -> &u32
-    {
-        &self.max_mana
-    }
-
-    pub fn set_max_mana(&mut self, new_max_mana : u32)
-    {
-        self.max_mana = new_max_mana;
-    }
-
-    pub fn get_current_mana(&self) -> &u32
-    {
-        &self.current_mana
-    }
-
-    pub fn set_current_mana(&mut self, new_current_mana : u32)
-    {
-        self.current_mana = new_current_mana;
-    }
-
-    pub fn get_max_stamina(&self) -> &u32
-    {
-        &self.max_stamina
-    }
-
-    pub fn set_max_stamina(&mut self, new_max_stamina : u32)
-    {
-        self.max_stamina = new_max_stamina;
-    }
-
-    pub fn get_current_stamina(&self) -> &u32
-    {
-        &self.current_stamina
-    }
-
-    pub fn set_current_stamina(&mut self, new_current_stamina : u32)
-    {
-        self.current_stamina = new_current_stamina;
-    }
-
-    pub fn get_armor_class(&self) -> &u32
-    {
-        &self.armor_class
-    }
-
-    pub fn set_armor_class(&mut self, new_armor_class : u32)
-    {
-        self.armor_class = new_armor_class;
-    }
-
-    pub fn get_strength(&self) -> &u32
-    {
-        &self.strength
-    }
-
-    pub fn set_strength(&mut self, new_strength : u32)
-    {
-        self.strength = new_strength;
-    }
-
-    pub fn get_dexterity(&self) -> &u32
-    {
-        &self.dexterity
-    }
-
-    pub fn set_dexterity(&mut self, new_dexterity : u32)
-    {
-        self.dexterity = new_dexterity;
-    }
-
-    pub fn get_constitution(&self) -> &u32
-    {
-        &self.constitution
-    }
-
-    pub fn set_constitution(&mut self, new_constitution : u32)
-    {
-        self.constitution = new_constitution;
-    }
-
-    pub fn get_intelligence(&self) -> &u32
-    {
-        &self.intelligence
-    }
-
-    pub fn set_intelligence(&mut self, new_intelligence : u32)
-    {
-        self.intelligence = new_intelligence;
-    }
-
-    pub fn get_wisdom(&self) -> &u32
-    {
-        &self.wisdom
-    }
-
-    pub fn set_wisdom(&mut self, new_wisdom : u32)
-    {
-        self.wisdom = new_wisdom;
-    }
-
-    pub fn get_charisma(&self) -> &u32
-    {
-        &self.charisma
-    }
-
-    pub fn set_charisma(&mut self, new_charisma : u32)
-    {
-        self.charisma = new_charisma;
-    }
-
-    pub fn get_experience_have(&self) -> &u32
-    {
-        &self.experience_have
-    }
-
-    pub fn set_experience_have(&mut self, new_experience_have : u32)
-    {
-        self.experience_have = new_experience_have;
-    }
-
-    pub fn get_experience_worth(&self) -> &u32
-    {
-        &self.experience_worth
-    }
-
-    pub fn set_experience_worth(&mut self, new_experience_worth : u32)
-    {
-        self.experience_worth = new_experience_worth;
     }
 
     pub fn get_image(&self) -> &char
@@ -274,9 +122,128 @@ impl Creature
         self.player_control = new_player_control;
     }
 
-    pub fn get_inventory_handle (&mut self) -> &mut Vec<item::Item>
+
+    pub fn get_evasion(&self) -> &u32
     {
-        &mut self.inventory
+        return &self.evasion;
     }
-    
+    pub fn set_evasion(&mut self, new_evasion : u32)
+    {
+        self.evasion = new_evasion;
+    }
+    pub fn get_endurance(&self) -> &u32
+    {
+        return &self.endurance;
+    }
+    pub fn set_endurnace(&mut self, new_endurance : u32)
+    {
+        self.endurance = new_endurance;
+    }
+    pub fn get_nullification(&self) ->&u32
+    {
+        return &self.nullification;
+    }
+    pub fn set_nullification(&mut self, new_nullification : u32)
+    {
+        self.nullification = new_nullification;
+    }
+
+    pub fn use_skill(&self,
+                     target    : &mut Creature,
+                     the_skill : skill::Skill,
+                     the_rng   : &mut rng::PseudoRandom) -> bool
+    {
+        let mut stat1   = 0;
+        let mut stat2   = 0;
+        let mut stat3   = 0;
+        let mut defense = 0;
+        
+        match the_skill.GetStat1()
+        {
+            skill::StatTarget::Creativity =>
+            {
+                stat1 = self.creativity;
+            }
+            skill::StatTarget::Focus =>
+            {
+                stat1 =  self.focus;
+            }
+            skill::StatTarget::Memory =>
+            {
+                stat1 = self.memory;
+            }
+            skill::StatTarget::Error =>
+            {
+                panic!("Error in use_skill:  stat target 1 is ERROR");
+            }
+        }
+
+        match the_skill.GetStat2()
+        {
+            skill::StatTarget::Creativity =>
+            {
+                stat2 = self.creativity;
+            }
+            skill::StatTarget::Focus =>
+            {
+                stat2 = self.focus;
+            }
+            skill::StatTarget::Memory =>
+            {
+                stat2 = self.memory;
+            }
+            skill::StatTarget::Error =>
+            {
+                panic!("Error in use_skill:  stat target 2 is ERROR");
+            }
+        }
+
+        match the_skill.GetStat3()
+        {
+            skill::StatTarget::Creativity =>
+            {
+                stat3 = self.creativity;
+            }
+            skill::StatTarget::Focus =>
+            {
+                stat3 = self.focus;
+            }
+            skill::StatTarget::Memory =>
+            {
+                stat3 = self.memory;
+            }
+            skill::StatTarget::Error =>
+            {
+                panic!("Error in use_skill:  stat target 3 is ERROR");
+            }
+        }
+
+        match the_skill.GetDefense()
+        {
+            skill::DefenseTarget::Evasion =>
+            {
+                defense = *target.get_evasion();
+            }
+            skill::DefenseTarget::Endurance =>
+            {
+                defense = *target.get_endurance();
+            }
+            skill::DefenseTarget::Nullification =>
+            {
+                defense = *target.get_nullification();
+            }
+            skill::DefenseTarget::None =>
+            {
+                defense = 0;
+            }
+            skill::DefenseTarget::Error =>
+            {
+                panic!("Error in use_skill:  defense target is ERROR");
+            }
+        }
+
+
+        return the_rng.roll_skill_check(stat1, stat2, stat3, defense);
+    }
+ 
 } // End Creature Implementation.

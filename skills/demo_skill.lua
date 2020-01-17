@@ -1,0 +1,9 @@
+demo = {}
+demo.name        = "Demo"
+demo.range       = "1"
+demo.skill1      = "Creativity"
+demo.skill2      = "Memory"
+demo.skill3      = "Focus"
+demo.defense     = "Nullification"
+demo.description = "This spell is a demo that exists to test the interface."
+demo.effect      = "None"
