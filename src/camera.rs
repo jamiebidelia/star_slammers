@@ -1,3 +1,22 @@
+/*
+   _____ _                _____ _                                                      
+  / ____| |              / ____| |                                        _            
+ | (___ | |_ __ _ _ __  | (___ | | __ _ _ __ ___  _ __ ___   ___ _ __ ___(_)           
+  \___ \| __/ _` | '__|  \___ \| |/ _` | '_ ` _ \| '_ ` _ \ / _ \ '__/ __|             
+  ____) | || (_| | |     ____) | | (_| | | | | | | | | | | |  __/ |  \__ \_            
+ |_____/ \__\__,_|_|    |_____/|_|\__,_|_| |_| |_|_| |_| |_|\___|_|  |___(_)           
+  _____        __ _       _ _                     _                 _                  
+ |_   _|      / _(_)     (_) |           /\      | |               | |                 
+   | |  _ __ | |_ _ _ __  _| |_ ___     /  \   __| |_   _____ _ __ | |_ _   _ _ __ ___ 
+   | | | '_ \|  _| | '_ \| | __/ _ \   / /\ \ / _` \ \ / / _ \ '_ \| __| | | | '__/ _ \
+  _| |_| | | | | | | | | | | ||  __/  / ____ \ (_| |\ V /  __/ | | | |_| |_| | | |  __/
+ |_____|_| |_|_| |_|_| |_|_|\__\___| /_/    \_\__,_| \_/ \___|_| |_|\__|\__,_|_|  \___|
+*/
+
+
+#![allow(non_snake_case)]
+#![allow(clippy::suspicious_else_formatting)]
+
 extern crate pancurses;
 use crate::creature;
 use crate::tile_map;
@@ -183,7 +202,7 @@ pub fn draw_screen(game_window      : &pancurses::Window,
                game_camera          : &Camera,
                game_map             : &tile_map::TileMap,
                creatures_on_map     : &Vec<creature::Creature>,
-               mut console_buffer   : &mut Vec<String>)
+               console_buffer       : &Vec<String>)
 {
     
     // The max values it gives are not printable.  So we need to
@@ -248,9 +267,6 @@ pub fn draw_screen(game_window      : &pancurses::Window,
 
     let camera_screen_stop_x = map_end_x;
     let camera_screen_stop_y = map_end_y;
-
-    let camera_len    = (camera_screen_stop_x - camera_screen_start_x) as u32;
-    let camera_height = (camera_screen_stop_y - camera_screen_start_y) as u32;
     
     //camera position is map position format.
 
@@ -265,7 +281,7 @@ pub fn draw_screen(game_window      : &pancurses::Window,
         // then 21 - 2 = 19.
         
         // As y goes up in screen coordinates, our position moves down in map coordinates.
-        let map_y = -1 * y + CAMERA_OFFSET + *game_camera.get_y_pos();
+        let map_y = -y + CAMERA_OFFSET + *game_camera.get_y_pos();
         
         for x in camera_screen_start_x .. camera_screen_stop_x
         {
@@ -278,19 +294,22 @@ pub fn draw_screen(game_window      : &pancurses::Window,
             
             // Make sure that if the camera view looks outside the
             // game map, we don't attempt to draw game tiles there.
-            let mut ok_to_draw = true;
+            let ok_to_draw =
 
             // If the map coordinates we have are outside the bounds of the map,
             // Do not attempt to draw there.
             if map_x < 0 || map_x >= *game_map.get_x_size() as i32
             {
-                ok_to_draw = false;
+                false
             }
-
-            if map_y < 0 || map_y >= *game_map.get_y_size() as i32
+            else if map_y < 0 || map_y >= *game_map.get_y_size() as i32
             {
-                ok_to_draw = false;
+                false
             }
+            else
+            {
+                true
+            };
 
             if ok_to_draw
             {
@@ -304,32 +323,36 @@ pub fn draw_screen(game_window      : &pancurses::Window,
     }
 
 
-            //Pretend creature is at x 28, y 28.
-            //Camera is at x 24, y 24.
-            //Creature is at x28 y 20.
-            //Creature is offset from x by 4, and should be 4 spaces right (add 4).
-            //Creature is offset from y by 4, and should be 4 spaces up (subtract 4)
-            //Both of these positions should be offset by the map offset.
+    // Intuition:
+    // Camera is at x 24, y 24.
+    // Creature is at x28 y 20.
+    // Creature is offset from x by 4, and should be 4 spaces right (add 4).
+    // Creature is offset from y by 4, and should be 4 spaces up (subtract 4)
+    // Both of these positions should be offset by the map offset.
 
-
-            //y pos is 5.
-            //cy is 10.
-            // 5 + (10 - 5);
+    // y pos is 5.
+    // cy is 10.
+    // 5 + (10 - 5);
 
     // Draw all creatures that are visible to the camera.
     for creature in creatures_on_map
     {
 
 
-        let screen_x : i32 = *creature.get_x_pos() as i32 - *game_camera.get_x_pos() as i32 + CAMERA_OFFSET;
-        let screen_y : i32 = *game_camera.get_y_pos() as i32 - *creature.get_y_pos() as i32 + CAMERA_OFFSET;
+        let screen_x : i32 = *creature.get_x_pos() as i32 - 
+            *game_camera.get_x_pos() as i32 + CAMERA_OFFSET;
+            
+        let screen_y : i32 = *game_camera.get_y_pos() as i32 -
+            *creature.get_y_pos() as i32 + CAMERA_OFFSET;
 
         if (screen_x >= camera_screen_start_x) &&
            (screen_x <= camera_screen_stop_x) &&
            (screen_y >= camera_screen_start_y) &&
            (screen_y <= camera_screen_stop_y)
         {
-            game_window.mvprintw(screen_y, screen_x, creature.get_image().to_string());
+            game_window.mvprintw(screen_y,
+                                 screen_x,
+                                 creature.get_image().to_string());
             
         }
 
@@ -338,8 +361,8 @@ pub fn draw_screen(game_window      : &pancurses::Window,
 }
 
 
-pub fn draw_console(game_window    : &pancurses::Window,
-                console_buffer : &Vec<String>)
+pub fn draw_console(game_window  : &pancurses::Window,
+                console_buffer   : &Vec<String>)
 {
     let mut cur_message_line = get_console_end_y(game_window);
     for s in console_buffer.iter().rev()
@@ -348,7 +371,7 @@ pub fn draw_console(game_window    : &pancurses::Window,
                              get_console_start_x(game_window),
                              s);
         
-        cur_message_line = cur_message_line - 1;
+        cur_message_line -= 1;
         if cur_message_line == get_console_start_y(game_window)
         {
             break;

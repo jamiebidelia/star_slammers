@@ -1,4 +1,23 @@
-///TOP LEVEL DOC COMMENT.
+/*
+   _____ _                _____ _                                                      
+  / ____| |              / ____| |                                        _            
+ | (___ | |_ __ _ _ __  | (___ | | __ _ _ __ ___  _ __ ___   ___ _ __ ___(_)           
+  \___ \| __/ _` | '__|  \___ \| |/ _` | '_ ` _ \| '_ ` _ \ / _ \ '__/ __|             
+  ____) | || (_| | |     ____) | | (_| | | | | | | | | | | |  __/ |  \__ \_            
+ |_____/ \__\__,_|_|    |_____/|_|\__,_|_| |_| |_|_| |_| |_|\___|_|  |___(_)           
+  _____        __ _       _ _                     _                 _                  
+ |_   _|      / _(_)     (_) |           /\      | |               | |                 
+   | |  _ __ | |_ _ _ __  _| |_ ___     /  \   __| |_   _____ _ __ | |_ _   _ _ __ ___ 
+   | | | '_ \|  _| | '_ \| | __/ _ \   / /\ \ / _` \ \ / / _ \ '_ \| __| | | | '__/ _ \
+  _| |_| | | | | | | | | | | ||  __/  / ____ \ (_| |\ V /  __/ | | | |_| |_| | | |  __/
+ |_____|_| |_|_| |_|_| |_|_|\__\___| /_/    \_\__,_| \_/ \___|_| |_|\__|\__,_|_|  \___|
+*/
+
+
+#![allow(non_snake_case)]
+
+
+
 /*
 colors are:
 
@@ -18,7 +37,6 @@ COLOR_WHITE
 
 extern crate pancurses;
 
-
 mod item;
 mod creature;
 mod action;
@@ -32,6 +50,7 @@ mod mode;
 mod inventory_screen;
 mod rng;
 mod skill;
+mod title;
 
 /// Starts the game
 fn main()
@@ -39,6 +58,12 @@ fn main()
     let mut game_mode        = mode::Mode::Adventure;
     let game_window          = initialize_game();   
     let mut end_game         = false;
+
+
+    let mut game_mode = mode::Mode::Adventure;
+    //let mut game_mode = mode::Mode::Inventory;
+    //let mut game_mode = mode::Mode::TitleScreen;
+
 
     let mut player = creature::Creature::new();
     player.set_name("Avatar Steve".to_string());
@@ -59,10 +84,14 @@ fn main()
     let tile_database = tile::build_tile_database();
 
     // The Tile Map holds the terrain data for each square on the map.
-    let mut tile_map = tile_map::load_map("maps/test.map".to_string(), &tile_database);
+    let mut tile_map = tile_map::load_map("maps/test.map".to_string(),
+                                          &tile_database);
 
     let mut game_camera = camera::Camera::new();
-    camera::update_camera(&mut game_camera, &game_window, &creatures_on_map[0], &tile_map);
+    camera::update_camera(&mut game_camera,
+                          &game_window,
+                          &creatures_on_map[0],
+                          &tile_map);
 
 
     
@@ -89,19 +118,22 @@ fn main()
                 inventory_iter(&game_window,
                                &mut creatures_on_map[0],
                                &mut console_buffer);
+            },
+            mode::Mode::TitleScreen =>
+            {
+                title_iter(&game_window, &mut game_mode);
             }
-
-
         } // End Match game_mode.
 
         
         std::thread::sleep(std::time::Duration::from_millis(100));
     } // End Game Loop.
-
+    
     shut_down_game();
 } // End Main.
 
-/// In Adventure Mode, each iteration is a step in the game loop.  We draw the screen, take an action, and update the game camera.
+/// In Adventure Mode, each iteration is a step in the game loop.
+/// We draw the screen, take an action, and update the game camera.
 fn adventure_iter(game_window       : &pancurses::Window,
                   game_camera       : &mut camera::Camera,
                   tile_map          : &mut tile_map::TileMap,
@@ -114,9 +146,11 @@ fn adventure_iter(game_window       : &pancurses::Window,
                         &game_camera,
                         &tile_map,
                         &creatures_on_map,
-                        console_buffer);	// Draw the Screen.
-    
-    let game_action = input::process_keyboard(&game_window); // Listen for a key and turn it into an action.
+                        &console_buffer);	// Draw the Screen.
+
+
+    // Listen for a key and turn it into an action.
+    let game_action = input::process_keyboard(&game_window); 
     action::do_action(&game_action,
                       game_window,
                       tile_map,
@@ -125,10 +159,14 @@ fn adventure_iter(game_window       : &pancurses::Window,
                       end_game,
                       console_buffer);   // Process the game action.
     
-    camera::update_camera(game_camera, game_window, &mut creatures_on_map[0], tile_map);
+    camera::update_camera(game_camera,
+                          game_window,
+                          &creatures_on_map[0],
+                          tile_map);
 } // End adventure_iter.
 
-/// In Inventory Mode, each iteration handles player input for changing gear, checking stats, etc.
+/// In Inventory Mode, each iteration handles player input for changing gear,
+/// checking stats, etc.
 fn inventory_iter(game_window        : &pancurses::Window,
                   mut player         : &mut creature::Creature,
                   mut console_buffer : &mut Vec<String>)
@@ -136,32 +174,49 @@ fn inventory_iter(game_window        : &pancurses::Window,
     inventory_screen::draw_screen(&game_window,
                                   &mut player,
                                   &mut console_buffer);
-    let inventory_action = inventory_screen::process_keyboard(&game_window); // Listen for a key and turn it into an action.
+
+     // Listen for a key and turn it into an action.
+    let inventory_action = inventory_screen::process_keyboard(&game_window);
     
 } // End inventory_iter.
+
+
+
+/// In Title Mode, each iteration draws the title image and menus.  It also
+/// handles player input for menu navigation.
+fn title_iter(game_window : &pancurses::Window,
+              game_mode   : &mut mode::Mode)
+{
+    title::draw_title(game_window);
+    
+    // Listen for a key and turn it into an action.
+    let game_action = title::process_keyboard(&game_window); 
+
+    // For now just discard the action.
+}
 
 /// Gets PanCurses up and running and accepts keyboard input.
 fn initialize_game() -> pancurses::Window
 {
     let game_window = pancurses::initscr(); // Create a new window.
-    pancurses::cbreak();		    // Allow one-character-at-a-time.
-    pancurses::noecho();		    // Suppress echoing of characters.
-    game_window.keypad(true);		    // Set Keypad mode.
-    game_window.nodelay(false);		    // Set delay mode.
+    pancurses::cbreak();		              // Allow one-character-at-a-time.
+    pancurses::noecho();		              // Suppress echoing of characters.
+    game_window.keypad(true);		           // Set Keypad mode.
+    game_window.nodelay(false);		        // Set delay mode.
     pancurses::curs_set(0);                 // Disable cursor blinking.
-    game_window				    // Return the window we initialized.     
+    game_window				                 // Return the window we initialized.     
 }
 
 /// Ends the Pancurses Window.
 fn shut_down_game()
 {
-    pancurses::use_default_colors();        // Make sure the terminal colors are reset.
-    pancurses::endwin();	            // End the window when we are done.
+    pancurses::use_default_colors();    // Reset the terminal colors.
+    pancurses::endwin();	             // End the window when we are done.
 }
 
 /// Shuts the game down properly before causing an assertion.
 fn blow_up()
 {
-    shut_down_game();                       // Shut down the pancurses window.
-    assert!(false);                         // We will now crash the game.
+    shut_down_game();                   // Shut down the pancurses window.
+    panic!();                           // We will now crash the game.
 }

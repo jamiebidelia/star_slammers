@@ -1,4 +1,3 @@
-///TOP LEVEL DOC COMMENT.
 /*
    _____ _                _____ _                                                      
   / ____| |              / ____| |                                        _            
@@ -14,23 +13,9 @@
  |_____|_| |_|_| |_|_| |_|_|\__\___| /_/    \_\__,_| \_/ \___|_| |_|\__|\__,_|_|  \___|
 */
 
-//Courtesy patorjk.com/software/taag/
-
-/*
-colors are:
-
-COLOR_BLACK
-COLOR_RED
-COLOR_GREEN
-COLOR_YELLOW
-COLOR_BLUE
-COLOR_MAGENTA
-COLOR_CYAN
-COLOR_WHITE
-*/
 
 
-
+#![allow(non_snake_case)]
 
 
 extern crate pancurses;

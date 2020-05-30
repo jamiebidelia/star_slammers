@@ -1,3 +1,22 @@
+/*
+   _____ _                _____ _                                                      
+  / ____| |              / ____| |                                        _            
+ | (___ | |_ __ _ _ __  | (___ | | __ _ _ __ ___  _ __ ___   ___ _ __ ___(_)           
+  \___ \| __/ _` | '__|  \___ \| |/ _` | '_ ` _ \| '_ ` _ \ / _ \ '__/ __|             
+  ____) | || (_| | |     ____) | | (_| | | | | | | | | | | |  __/ |  \__ \_            
+ |_____/ \__\__,_|_|    |_____/|_|\__,_|_| |_| |_|_| |_| |_|\___|_|  |___(_)           
+  _____        __ _       _ _                     _                 _                  
+ |_   _|      / _(_)     (_) |           /\      | |               | |                 
+   | |  _ __ | |_ _ _ __  _| |_ ___     /  \   __| |_   _____ _ __ | |_ _   _ _ __ ___ 
+   | | | '_ \|  _| | '_ \| | __/ _ \   / /\ \ / _` \ \ / / _ \ '_ \| __| | | | '__/ _ \
+  _| |_| | | | | | | | | | | ||  __/  / ____ \ (_| |\ V /  __/ | | | |_| |_| | | |  __/
+ |_____|_| |_|_| |_|_| |_|_|\__\___| /_/    \_\__,_| \_/ \___|_| |_|\__|\__,_|_|  \___|
+*/
+
+
+#![allow(non_snake_case)]
+#![allow(clippy::suspicious_else_formatting)]
+
 extern crate pancurses;
 use crate::creature;
 use crate::direction;
@@ -30,21 +49,20 @@ pub fn do_action(game_action    : &Action,
     
     match game_action
     {
-        Action::MoveUp    => make_move(actor, direction::Direction::North, &game_map, &game_window, &mut console_buffer),
-        Action::MoveDown  => make_move(actor, direction::Direction::South, &game_map, &game_window, &mut console_buffer),
-        Action::MoveLeft  => make_move(actor, direction::Direction::East,  &game_map, &game_window,  &mut console_buffer),
-        Action::MoveRight => make_move(actor, direction::Direction::West,  &game_map, &game_window,  &mut console_buffer),
+        Action::MoveUp    => make_move(actor, direction::Direction::North, &game_map, &mut console_buffer),
+        Action::MoveDown  => make_move(actor, direction::Direction::South, &game_map, &mut console_buffer),
+        Action::MoveLeft  => make_move(actor, direction::Direction::East,  &game_map, &mut console_buffer),
+        Action::MoveRight => make_move(actor, direction::Direction::West,  &game_map, &mut console_buffer),
         Action::Pass      =>
         {
             let message = format!("{}:  Pass.", actor.get_name());
             console::post_to_console(message,
-                                     &game_window,
                                      &mut console_buffer)
         },
         Action::Invalid   => (),
         Action::Resize    => {game_window.clear();},
         Action::Inventory => *game_mode = mode::Mode::Inventory,
-        Action::QuitMode  => (),  // Currently we do not have a main menu to jump back to. 
+        Action::QuitMode  => *game_mode = mode::Mode::TitleScreen, 
         Action::EndGame   => *end_game = true,
     }
 }
@@ -52,7 +70,6 @@ pub fn do_action(game_action    : &Action,
 fn make_move(actor          : &mut creature::Creature,
              direction      : direction::Direction,
              game_map       : &tile_map::TileMap,
-             game_window    : &pancurses::Window,
              mut console_buffer : &mut Vec<String>)
 {
 
@@ -71,7 +88,7 @@ fn make_move(actor          : &mut creature::Creature,
     {
         direction::Direction::North =>
             if (actor_y_index < (*game_map.get_y_size() - 1) as usize) && // Remember that if y_size is 10, the max tile is tile 9.
-               (*map[actor_x_index][actor_y_index + 1].get_passable() == true)
+               (*map[actor_x_index][actor_y_index + 1].get_passable())
 
             {
                 actor.set_y_pos(actor.get_y_pos() + 1);
@@ -79,40 +96,40 @@ fn make_move(actor          : &mut creature::Creature,
            else
            {
                let message = format!("{}:  Cannot Go North!", actor.get_name());
-               console::post_to_console(message, &game_window, &mut console_buffer);
+               console::post_to_console(message, &mut console_buffer);
            },
         direction::Direction::South =>
             if (actor_y_index > 0) &&
-               (*map[actor_x_index][actor_y_index - 1].get_passable() == true)
+               (*map[actor_x_index][actor_y_index - 1].get_passable())
             {
                 actor.set_y_pos(actor.get_y_pos() - 1);
             }
             else
             {
                 let message = format!("{}:  Cannot Go South!", actor.get_name());
-                console::post_to_console(message, &game_window, &mut console_buffer);
+                console::post_to_console(message, &mut console_buffer);
             },
         direction::Direction::East =>
             if (actor_x_index > 0) &&
-               (*map[actor_x_index - 1][actor_y_index].get_passable() == true)
+               (*map[actor_x_index - 1][actor_y_index].get_passable())
             {
                 actor.set_x_pos(actor.get_x_pos() - 1);
             }
             else
             {  
                 let message = format!("{}:  Cannot Go East!", actor.get_name());
-                console::post_to_console(message, &game_window, &mut console_buffer);
+                console::post_to_console(message, &mut console_buffer);
             },
         direction::Direction::West =>
             if (actor_x_index < (*game_map.get_x_size() - 1) as usize) && // Remember that if x_size is 10, the max tile is tile 9.
-               (*map[actor_x_index + 1][actor_y_index].get_passable() == true)
+               (*map[actor_x_index + 1][actor_y_index].get_passable())
             {
                 actor.set_x_pos(actor.get_x_pos() + 1);
             }
             else
             {
                 let message = format!("{}:  Cannot Go West!", actor.get_name());
-                console::post_to_console(message, &game_window, &mut console_buffer);
+                console::post_to_console(message, &mut console_buffer);
             }
     } // End match direction.
 }
