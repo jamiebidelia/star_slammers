@@ -46,6 +46,7 @@ mod tile;
 mod tile_map;
 mod console;
 mod input;
+mod menu;
 mod mode;
 mod inventory_screen;
 mod rng;
@@ -59,11 +60,13 @@ fn main()
     let game_window          = initialize_game();   
     let mut end_game         = false;
 
+    // Start the game in Menu Mode (The Title Screen)
+    let mut menu_pointer : Option<&menu::MenuNode> = None;
+    let mut game_mode    = mode::Mode::TitleScreen;
+    enter_title_mode(&mut game_mode, &mut menu_pointer);
 
-    let mut game_mode = mode::Mode::Adventure;
+    //let mut game_mode = mode::Mode::Adventure;
     //let mut game_mode = mode::Mode::Inventory;
-    //let mut game_mode = mode::Mode::TitleScreen;
-
 
     let mut player = creature::Creature::new();
     player.set_name("Avatar Steve".to_string());
@@ -121,7 +124,9 @@ fn main()
             },
             mode::Mode::TitleScreen =>
             {
-                title_iter(&game_window, &mut game_mode);
+                title_iter(&game_window,
+                           &mut game_mode,
+                           &mut menu_pointer);
             }
         } // End Match game_mode.
 
@@ -131,6 +136,14 @@ fn main()
     
     shut_down_game();
 } // End Main.
+
+fn enter_title_mode(game_mode    : &mut mode::Mode,
+                    menu_pointer : &mut Option<&menu::MenuNode>)
+{
+    *game_mode    = mode::Mode::TitleScreen;
+    *menu_pointer = Some(&menu::MAIN_MENU);
+}
+
 
 /// In Adventure Mode, each iteration is a step in the game loop.
 /// We draw the screen, take an action, and update the game camera.
@@ -185,9 +198,13 @@ fn inventory_iter(game_window        : &pancurses::Window,
 /// In Title Mode, each iteration draws the title image and menus.  It also
 /// handles player input for menu navigation.
 fn title_iter(game_window : &pancurses::Window,
-              game_mode   : &mut mode::Mode)
+              game_mode   : &mut mode::Mode,
+              menu_pointer :&mut Option<&menu::MenuNode>)
 {
     title::draw_title(game_window);
+    
+    title::draw_menu(game_window, &menu_pointer);
+    title::draw_dedication(game_window);
     
     // Listen for a key and turn it into an action.
     let game_action = title::process_keyboard(&game_window); 

@@ -22,6 +22,7 @@ use std::io::BufReader;
 use std::fs::File;
 use std::env;
 
+use crate::menu;
 use crate::action;
 
 
@@ -79,6 +80,79 @@ pub fn draw_title(game_window  : &pancurses::Window)
                              title_x,
                              title_array[index as usize]);
     }
+}
+
+pub fn draw_dedication(game_window : &pancurses::Window)
+{
+   let start_x = game_window.get_beg_x();
+   let end_x   = game_window.get_max_x();
+
+   let start_y = game_window.get_beg_y();
+   let end_y   = game_window.get_max_y();
+
+   let dedication_string = "A labor of love by Jamie Bidelia O'Brien, 2020";
+   let dedication_length = dedication_string.len();
+
+   // Center the dedication horizontally.
+   let dedication_x =
+      (start_x + (((end_x - start_x) as f32 * 0.5) as i32)) -
+      (dedication_length / 2) as i32;
+   
+   // Indent 95% from the top.
+   let dedication_y =
+   start_y + (((end_y - start_y) as f32 * 0.95) as i32);
+   
+   game_window.mvprintw(dedication_y, dedication_x, dedication_string);
+}
+
+pub fn draw_menu(game_window  : &pancurses::Window,
+                 menu_pointer : &Option<&menu::MenuNode>)
+{
+   let start_x = game_window.get_beg_x();
+   let end_x   = game_window.get_max_x();
+
+   let start_y = game_window.get_beg_y();
+   let end_y   = game_window.get_max_y();
+
+   // Indent 40% from the left.
+   let menu_x_beginning = start_x + (((end_x - start_x) as f32 * 0.4) as i32);
+   
+   // Indent 50% from the top.
+   let menu_y_beginning = start_y + (((end_y - start_y) as f32 * 0.5) as i32);
+
+   let draw_menu_pointer = &menu::MAIN_MENU;
+   
+   draw_menu_children(game_window,
+                       draw_menu_pointer,
+                       menu_y_beginning,
+                       menu_x_beginning);
+   
+}
+
+fn draw_menu_children(game_window   : &pancurses::Window,
+                       menu_pointer : &menu::MenuNode,
+                       y_pos        : i32,
+                       x_pos        : i32)
+{
+   let mut y_scroller = y_pos;
+   
+   let option_children = menu_pointer.get_children();
+   match option_children
+   {
+      None =>
+      {
+         // Skip printing out the menu if there are no children to print.
+      }
+      
+      Some(menu_vector) => 
+      {
+         for menu_item in menu_vector
+         {
+            game_window.mvprintw(y_scroller, x_pos, menu_item.get_text());
+            y_scroller += 3;
+         }
+      }
+   }
 }
 
 pub fn process_keyboard(game_window : &pancurses::Window) -> action::Action
