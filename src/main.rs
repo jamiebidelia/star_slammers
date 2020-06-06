@@ -42,6 +42,7 @@ mod creature;
 mod action;
 mod direction;
 mod camera;
+mod menuaction;
 mod tile;
 mod tile_map;
 mod console;
@@ -56,9 +57,9 @@ mod title;
 /// Starts the game
 fn main()
 {
-    let mut game_mode        = mode::Mode::Adventure;
-    let game_window          = initialize_game();   
-    let mut end_game         = false;
+    let mut game_mode = mode::Mode::Adventure;
+    let game_window   = initialize_game();   
+    let mut end_game  = false;
 
     // Start the game in Menu Mode (The Title Screen)
     let mut menu_pointer : Option<&menu::MenuNode> = None;
@@ -159,7 +160,7 @@ fn adventure_iter(game_window       : &pancurses::Window,
                         &game_camera,
                         &tile_map,
                         &creatures_on_map,
-                        &console_buffer);	// Draw the Screen.
+                        &console_buffer);   // Draw the Screen.
 
 
     // Listen for a key and turn it into an action.
@@ -170,7 +171,7 @@ fn adventure_iter(game_window       : &pancurses::Window,
                       game_mode,
                       &mut creatures_on_map[0],
                       end_game,
-                      console_buffer);   // Process the game action.
+                      console_buffer);      // Process the game action.
     
     camera::update_camera(game_camera,
                           game_window,
@@ -197,9 +198,9 @@ fn inventory_iter(game_window        : &pancurses::Window,
 
 /// In Title Mode, each iteration draws the title image and menus.  It also
 /// handles player input for menu navigation.
-fn title_iter(game_window : &pancurses::Window,
-              game_mode   : &mut mode::Mode,
-              menu_pointer :&mut Option<&menu::MenuNode>)
+fn title_iter(game_window  : &pancurses::Window,
+              game_mode    : &mut mode::Mode,
+              menu_pointer : &mut Option<&menu::MenuNode>)
 {
     title::draw_title(game_window);
     
@@ -207,33 +208,34 @@ fn title_iter(game_window : &pancurses::Window,
     title::draw_dedication(game_window);
     
     // Listen for a key and turn it into an action.
-    let game_action = title::process_keyboard(&game_window); 
+    let menu_action = title::process_keyboard(&game_window); 
 
     // For now just discard the action.
+    menuaction::do_action(game_mode, menu_pointer, &menu_action);
 }
 
 /// Gets PanCurses up and running and accepts keyboard input.
 fn initialize_game() -> pancurses::Window
 {
     let game_window = pancurses::initscr(); // Create a new window.
-    pancurses::cbreak();		              // Allow one-character-at-a-time.
-    pancurses::noecho();		              // Suppress echoing of characters.
-    game_window.keypad(true);		           // Set Keypad mode.
-    game_window.nodelay(false);		        // Set delay mode.
+    pancurses::cbreak();                    // Allow one-character-at-a-time.
+    pancurses::noecho();                    // Suppress echoing of characters.
+    game_window.keypad(true);               // Set Keypad mode.
+    game_window.nodelay(false);             // Set delay mode.
     pancurses::curs_set(0);                 // Disable cursor blinking.
-    game_window				                 // Return the window we initialized.     
+    game_window                             // Return the window we initialized.     
 }
 
 /// Ends the Pancurses Window.
 fn shut_down_game()
 {
-    pancurses::use_default_colors();    // Reset the terminal colors.
-    pancurses::endwin();	             // End the window when we are done.
+    pancurses::use_default_colors();        // Reset the terminal colors.
+    pancurses::endwin();                    // End the window when we are done.
 }
 
 /// Shuts the game down properly before causing an assertion.
 fn blow_up()
 {
-    shut_down_game();                   // Shut down the pancurses window.
-    panic!();                           // We will now crash the game.
+    shut_down_game();                       // Shut down the pancurses window.
+    panic!();                               // We will now crash the game.
 }
