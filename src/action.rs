@@ -38,12 +38,13 @@ pub enum Action
     EndGame
 }
 
-pub fn do_action(game_action    : &Action,
-                 game_window    : &pancurses::Window,
-                 game_map       : &tile_map::TileMap,
-                 game_mode      : &mut mode::Mode,
-                 actor          : &mut creature::Creature,
-                 end_game       : &mut bool,
+
+pub fn do_action(game_action        : &Action,
+                 game_window        : &pancurses::Window,
+                 game_map           : &tile_map::TileMap,
+                 game_mode          : &mut mode::Mode,
+                 actor              : &mut creature::Creature,
+                 end_game           : &mut bool,
                  mut console_buffer : &mut Vec<String>)
 {
     

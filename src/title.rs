@@ -18,12 +18,8 @@
 
 extern crate pancurses;
 
-use std::io::BufReader;
-use std::fs::File;
-use std::env;
-
 use crate::menu;
-use crate::action;
+use crate::menuaction;
 
 
 pub fn draw_title(game_window  : &pancurses::Window)
@@ -134,72 +130,60 @@ fn draw_menu_children(game_window   : &pancurses::Window,
                        y_pos        : i32,
                        x_pos        : i32)
 {
+
+   let cursor = "-->";
    let mut y_scroller = y_pos;
    
-   let option_children = menu_pointer.get_children();
-   match option_children
-   {
-      None =>
-      {
-         // Skip printing out the menu if there are no children to print.
-      }
-      
-      Some(menu_vector) => 
-      {
-         for menu_item in menu_vector
-         {
+   let children = menu_pointer.get_children();
+
+    if (children.len()) != 0
+    {
+        for menu_item in children
+        {
             game_window.mvprintw(y_scroller, x_pos, menu_item.get_text());
+            game_window.mvprintw(y_scroller, x_pos + 20, menu_pointer.get_text());
+            
+            if **menu_item != *menu_pointer
+            {
+                game_window.mvprintw(y_scroller, x_pos - 4 , cursor);
+            }
+            
             y_scroller += 3;
-         }
-      }
-   }
+            
+        }
+    }
 }
 
-pub fn process_keyboard(game_window : &pancurses::Window) -> action::Action
-{
 
-    let mut game_action = action::Action::Invalid;
+pub fn process_keyboard(game_window : &pancurses::Window) ->
+    menuaction::MenuAction
+{
+    let mut menu_action = menuaction::MenuAction::Invalid;
     
     match game_window.getch()
     {
         Some(pancurses::Input::KeyResize) =>
         {
-            game_action = action::Action::Resize;
+            menu_action = menuaction::MenuAction::Resize;
         }
         Some(pancurses::Input::KeyUp) =>
         {
-            game_action = action::Action::MoveUp;
+            menu_action = menuaction::MenuAction::CursorUp;
         }
         Some(pancurses::Input::KeyDown) =>
         {
-            game_action = action::Action::MoveDown;
+            menu_action = menuaction::MenuAction::CursorDown;
         }
-        Some(pancurses::Input::KeyLeft) =>
+        Some(pancurses::Input::KeyEnter) =>
         {
-            game_action = action::Action::MoveLeft;
+            menu_action = menuaction::MenuAction::Select;
         }
-        Some(pancurses::Input::KeyRight) =>
+	Some(_) =>
         {
-            game_action = action::Action::MoveRight;
-        }
-        Some(pancurses::Input::Character(' '))=>
-        {
-            game_action = action::Action::Pass;
-        }
-        Some(pancurses::Input::Character('i'))=>
-        {
-            game_action = action::Action::Inventory;
-        }
-        Some(pancurses::Input::Character(_)) =>
-        {
-            game_action = action::Action::EndGame;
-        }
-	     Some(_) =>
-        {
-            game_action = action::Action::Invalid;
-	     }
-	     None => () // Do nothing.
+            menu_action = menuaction::MenuAction::Invalid;
+	}
+	None => () // Do nothing.
     }
 
-    game_action // Return game_action
+    menu_action // Return menu_action
 }

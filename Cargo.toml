@@ -1,9 +1,10 @@
 [package]
-name = "roguelike"
-version = "0.1.0"
-authors = ["jamieo"]
+name = "star_slammers"
+version = "0.1.1"
+authors = ["jamiebidelia"]
 edition = "2018"
 
 [dependencies]
-pancurses = "0.16"
-lua       = "0.0.10"
+pancurses   = "0.16"
+lua         = "0.0.10"
+lazy_static = "1.4.0"
