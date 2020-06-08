@@ -28,15 +28,43 @@ pub enum MenuAction
 
 pub fn do_action(game_mode    : &mut mode::Mode,
                  menu_action  : &MenuAction,
-                 menu_cursor  : &menu::MenuItem)
+                 menu_cursor  : &mut usize,
+                 menu         : &Vec<menu::MenuItem>)
 {
 
     match menu_action
     {
-        CursorUp   => {}
-        CursorDown => {}
-        Select     => {}
-        Resize     => {} // Do nothing.
-        Invalid    => {} // Do nothing.
+        MenuAction::CursorUp   =>
+        {
+            if *menu_cursor > 0
+            {
+                *menu_cursor -= 1;
+            }
+            else
+            {
+                let max_field = menu.len() - 1 as usize;
+                *menu_cursor = max_field;
+            }
+        }
+        
+        MenuAction::CursorDown =>
+        {
+            let max_field = (menu.len() - 1) as usize;
+
+            if *menu_cursor < max_field
+            {
+                *menu_cursor += 1;
+            }
+            else
+            {
+                *menu_cursor = 0;
+            }
+        }
+        MenuAction::Select     =>
+        {
+            menu[*menu_cursor].do_action(game_mode, menu_cursor);
+        }
+        MenuAction::Resize     => {} // Do nothing.
+        MenuAction::Invalid    => {} // Do nothing.
     }
 }

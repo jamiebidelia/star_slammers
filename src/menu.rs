@@ -22,7 +22,7 @@ pub struct MenuItem<'a>
     text     : &'a str,
     visible  : bool,
     action   : fn(cur_mode   : &mut mode::Mode,
-                  cur_cursor : &mut menu::MenuItem)
+                  cur_cursor : &mut usize)
 }
 
 
@@ -40,7 +40,7 @@ impl MenuItem<'_>
 
     pub fn do_action(&self,
                      cur_mode   : &mut mode::Mode,
-                     cur_cursor : &mut menu::MenuItem)
+                     cur_cursor : &mut usize)
     {
         (self.action)(cur_mode, cur_cursor);
     }
@@ -71,7 +71,7 @@ impl std::cmp::PartialEq for MenuItem<'_>
 pub fn create_menu(in_text    : &str,
                    in_visible : bool,
                    in_action  : fn(cur_mode   : &mut mode::Mode,
-                                   cur_cursor : &mut menu::MenuItem))
+                                   cur_cursor : &mut usize))
                    -> MenuItem
 {
     MenuItem
@@ -84,28 +84,40 @@ pub fn create_menu(in_text    : &str,
 
 
 pub fn null_action(cur_mode   : &mut mode::Mode,
-                   cur_cursor : &mut menu::MenuItem)
+                   cur_cursor : &mut usize)
 {
     
+}
+
+pub fn new_game_action(cur_mode   : &mut mode::Mode,
+                       cur_cursor : &mut usize)
+{
+    *cur_mode = mode::Mode::Adventure;
+}
+
+pub fn quit_action(cur_mode   : &mut mode::Mode,
+                   cur_cursor : &mut usize)
+{
+    *cur_mode = mode::Mode::Quit;
 }
 
 pub fn create_main_menu() -> Vec<MenuItem<'static>>
 {
     let new_game  = create_menu("New Game",
                                 true,
-                                null_action);
+                                new_game_action);
 
-    let load_game = create_menu("Load Game",
+    let load_game = create_menu("Load Game [To Do]",
                                 true,
                                 null_action);
 
-    let resume    = create_menu("Resume",
+    let resume    = create_menu("Resume [To Do]",
                                 true,
                                 null_action);
 
     let quit      = create_menu("Quit",
                                 true,
-                                null_action);
+                                quit_action);
 
     let main_menu = vec!(new_game, load_game, resume, quit);
 

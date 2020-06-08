@@ -98,11 +98,11 @@ pub fn draw_dedication(game_window : &pancurses::Window)
    let dedication_y =
    start_y + (((end_y - start_y) as f32 * 0.95) as i32);
    
-   game_window.mvprintw(dedication_y, dedication_x, dedication_string);
+  
 }
 
 pub fn draw_menu(game_window  : &pancurses::Window,
-                 menu_cursor  : &menu::MenuItem)
+                 menu_cursor  : &usize)
 {
    let start_x = game_window.get_beg_x();
    let end_x   = game_window.get_max_x();
@@ -124,7 +124,7 @@ pub fn draw_menu(game_window  : &pancurses::Window,
 }
 
 fn draw_menu_children(game_window   : &pancurses::Window,
-                      menu_cursor   : &menu::MenuItem,
+                      menu_cursor   : &usize,
                       y_pos         : i32,
                       x_pos         : i32)
 {
@@ -136,11 +136,14 @@ fn draw_menu_children(game_window   : &pancurses::Window,
     
     if (main_menu.len()) != 0
     {
-        for menu_item in main_menu
+        for menu_item in &main_menu
         {
             game_window.mvprintw(y_scroller, x_pos, menu_item.get_text());
+
             
-            if menu_item == *menu_cursor
+            let menu_pointer = &main_menu[*menu_cursor];
+            
+            if menu_item == menu_pointer
             {
                 game_window.mvprintw(y_scroller, x_pos - 4 , cursor);
             }
@@ -171,16 +174,19 @@ pub fn process_keyboard(game_window : &pancurses::Window) ->
         {
             menu_action = menuaction::MenuAction::CursorDown;
         }
-        Some(pancurses::Input::KeyEnter) =>
+        Some(pancurses::Input::Character('\n'))=>
         {
             menu_action = menuaction::MenuAction::Select;
         }
-	Some(_) =>
+	     Some(_) =>
         {
             menu_action = menuaction::MenuAction::Invalid;
-	}
-	None => () // Do nothing.
+	     }
+	     None => () // Do nothing.
     }
 
+
+    
+    
     menu_action // Return menu_action
 }

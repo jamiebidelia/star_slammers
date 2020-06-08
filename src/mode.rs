@@ -19,5 +19,6 @@ pub enum Mode
 {
     Adventure,
     Inventory,
-    TitleScreen
+    Quit,
+    TitleScreen,
 }
