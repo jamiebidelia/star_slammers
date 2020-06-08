@@ -64,12 +64,10 @@ fn main()
     let mut end_game  = false;
 
     // Start the game in Menu Mode (The Title Screen)
-    let mut menu_pointer : Option<&menu::MenuNode> = None;
-    let mut game_mode    = mode::Mode::TitleScreen;
-    enter_title_mode(&mut game_mode, &mut menu_pointer);
-
-    //let mut game_mode = mode::Mode::Adventure;
-    //let mut game_mode = mode::Mode::Inventory;
+    let main_menu     = menu::create_main_menu();
+    let menu_cursor   = &main_menu[0];
+    let mut game_mode = mode::Mode::TitleScreen;
+    enter_title_mode(&mut game_mode);
 
     let mut player = creature::Creature::new();
     player.set_name("Avatar Steve".to_string());
@@ -129,7 +127,7 @@ fn main()
             {
                 title_iter(&game_window,
                            &mut game_mode,
-                           &mut menu_pointer);
+                           &menu_cursor);
             }
         } // End Match game_mode.
 
@@ -140,13 +138,8 @@ fn main()
     shut_down_game();
 } // End Main.
 
-fn enter_title_mode(game_mode    : &mut mode::Mode,
-                    menu_pointer : &mut Option<&menu::MenuNode>)
+fn enter_title_mode(game_mode    : &mut mode::Mode)
 {
-    let mut submenus = menu::MAIN_MENU.get_children();
-    if submenus.len() == 0 {blow_up();}
-
-    *menu_pointer  = Some(&submenus[0]); 
     *game_mode     = mode::Mode::TitleScreen;
 }
 
@@ -205,18 +198,18 @@ fn inventory_iter(game_window        : &pancurses::Window,
 /// handles player input for menu navigation.
 fn title_iter(game_window  : &pancurses::Window,
               game_mode    : &mut mode::Mode,
-              menu_pointer : &mut Option<&menu::MenuNode>)
+              menu_cursor  : &menu::MenuItem)
 {
     title::draw_title(game_window);
     
-    title::draw_menu(game_window, &menu_pointer);
+    title::draw_menu(game_window, &menu_cursor);
     title::draw_dedication(game_window);
     
     // Listen for a key and turn it into an action.
     let menu_action = title::process_keyboard(&game_window); 
 
     // For now just discard the action.
-    menuaction::do_action(game_mode, menu_pointer, &menu_action);
+    menuaction::do_action(game_mode, &menu_action, menu_cursor);
 }
 
 /// Gets PanCurses up and running and accepts keyboard input.

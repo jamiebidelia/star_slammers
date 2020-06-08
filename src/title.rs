@@ -102,7 +102,7 @@ pub fn draw_dedication(game_window : &pancurses::Window)
 }
 
 pub fn draw_menu(game_window  : &pancurses::Window,
-                 menu_pointer : &Option<&menu::MenuNode>)
+                 menu_cursor  : &menu::MenuItem)
 {
    let start_x = game_window.get_beg_x();
    let end_x   = game_window.get_max_x();
@@ -115,35 +115,32 @@ pub fn draw_menu(game_window  : &pancurses::Window,
    
    // Indent 50% from the top.
    let menu_y_beginning = start_y + (((end_y - start_y) as f32 * 0.5) as i32);
-
-   let draw_menu_pointer = &menu::MAIN_MENU;
    
    draw_menu_children(game_window,
-                       draw_menu_pointer,
-                       menu_y_beginning,
-                       menu_x_beginning);
+                      menu_cursor,
+                      menu_y_beginning,
+                      menu_x_beginning);
    
 }
 
 fn draw_menu_children(game_window   : &pancurses::Window,
-                       menu_pointer : &menu::MenuNode,
-                       y_pos        : i32,
-                       x_pos        : i32)
+                      menu_cursor   : &menu::MenuItem,
+                      y_pos         : i32,
+                      x_pos         : i32)
 {
 
-   let cursor = "-->";
-   let mut y_scroller = y_pos;
-   
-   let children = menu_pointer.get_children();
+    let cursor = "-->";
+    let mut y_scroller = y_pos;
 
-    if (children.len()) != 0
+    let main_menu = menu::create_main_menu();
+    
+    if (main_menu.len()) != 0
     {
-        for menu_item in children
+        for menu_item in main_menu
         {
             game_window.mvprintw(y_scroller, x_pos, menu_item.get_text());
-            game_window.mvprintw(y_scroller, x_pos + 20, menu_pointer.get_text());
             
-            if **menu_item != *menu_pointer
+            if menu_item == *menu_cursor
             {
                 game_window.mvprintw(y_scroller, x_pos - 4 , cursor);
             }

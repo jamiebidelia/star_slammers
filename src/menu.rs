@@ -13,35 +13,47 @@
  |_____|_| |_|_| |_|_| |_|_|\__\___| /_/    \_\__,_| \_/ \___|_| |_|\__|\__,_|_|  \___|
 */
 
-extern crate lazy_static;
+use crate::menu;
+use crate::mode;
 
 
-pub struct MenuNode<'a>
+pub struct MenuItem<'a>
 {
-    children : &'a Vec<&'a MenuNode<'a>>,
     text     : &'a str,
-    visible  : bool
+    visible  : bool,
+    action   : fn(cur_mode   : &mut mode::Mode,
+                  cur_cursor : &mut menu::MenuItem)
 }
 
-impl MenuNode<'_>
+
+impl MenuItem<'_>
 {
-   pub fn get_children(&self)->&Vec<&MenuNode>
-   {
-      &self.children
-   }
-   
-   pub fn get_text(&self) -> &str
-   {
-      self.text
-   }
+    pub fn get_text(&self) -> &str
+    {
+        self.text
+    }
+
+    pub fn get_visible(&self) -> bool
+    {
+        self.visible
+    }
+
+    pub fn do_action(&self,
+                     cur_mode   : &mut mode::Mode,
+                     cur_cursor : &mut menu::MenuItem)
+    {
+        (self.action)(cur_mode, cur_cursor);
+    }
 }
 
-impl std::cmp::PartialEq for MenuNode<'_>
+
+impl std::cmp::PartialEq for MenuItem<'_>
 {
-    fn eq(&self, other : &MenuNode<'_>) -> bool
+    fn eq(&self, other : &MenuItem<'_>) -> bool
     {
         return
-        if self.text == other.text
+            if self.text == other.text &&
+            self.visible == other.visible
         {
             true
         }
@@ -53,53 +65,49 @@ impl std::cmp::PartialEq for MenuNode<'_>
     }
 }
 
-const fn init_menu<'a>(the_children : &'a Vec<&'a MenuNode<'a>>,
-                       the_text     : &'a str,
-                       is_visible   : bool) -> MenuNode<'a>
+
+
+
+pub fn create_menu(in_text    : &str,
+                   in_visible : bool,
+                   in_action  : fn(cur_mode   : &mut mode::Mode,
+                                   cur_cursor : &mut menu::MenuItem))
+                   -> MenuItem
 {
-    MenuNode
+    MenuItem
     {
-      children     : the_children,
-      text         : the_text,
-      visible      : is_visible,
+        text    : in_text,
+        visible : in_visible,
+        action  : in_action
     }
-                              
 }
 
-// This code here is INCREDIBLY ugly.  All it does is uses lazy_static to
-// Let us have global static menus for the main menu.  Since the children
-// Are vectors, we have to initialize them at runtime instead of compile time.
-// But with Rust, I know of no other way to have globally available data.
 
-// This is probably a problem caused by ignorance and not a langauge problem.
-lazy_static::lazy_static!
+pub fn null_action(cur_mode   : &mut mode::Mode,
+                   cur_cursor : &mut menu::MenuItem)
 {
-    static ref NEW_GAME_CHILDREN : Vec<&'static MenuNode<'static>> = vec!();
-    static ref NEW_GAME_MENU     : MenuNode<'static> = init_menu(&NEW_GAME_CHILDREN,
-                                                        "New Game",
-                                                        true);
-    static ref LOAD_CHILDREN     : Vec<&'static MenuNode<'static>> = vec!();
-    static ref LOAD_MENU         : MenuNode<'static> = init_menu(&LOAD_CHILDREN,
-                                                        "Load Game",
-                                                        true);
-    static ref RESUME_CHILDREN   : Vec<&'static MenuNode<'static>> = vec!();
-    static ref RESUME_MENU       : MenuNode<'static> = init_menu(&RESUME_CHILDREN,
-                                                        "Resume Game",
-                                                        true);
-    static ref QUIT_CHILDREN     : Vec<&'static MenuNode<'static>> = vec!();
-    static ref QUIT_MENU         : MenuNode<'static> = init_menu(&QUIT_CHILDREN,
-                                                        "Quit",
-                                                        true);
-
-    static ref MAIN_CHILDREN : Vec<&'static MenuNode<'static>> =
-        vec!(&NEW_GAME_MENU,
-             &LOAD_MENU,
-             &RESUME_MENU,
-             &QUIT_MENU);
-
-    pub static ref MAIN_MENU   : MenuNode<'static> = init_menu(&MAIN_CHILDREN,
-                                                      "Main Menu",
-                                                      false);
     
 }
 
+pub fn create_main_menu() -> Vec<MenuItem<'static>>
+{
+    let new_game  = create_menu("New Game",
+                                true,
+                                null_action);
+
+    let load_game = create_menu("Load Game",
+                                true,
+                                null_action);
+
+    let resume    = create_menu("Resume",
+                                true,
+                                null_action);
+
+    let quit      = create_menu("Quit",
+                                true,
+                                null_action);
+
+    let main_menu = vec!(new_game, load_game, resume, quit);
+
+    main_menu
+}

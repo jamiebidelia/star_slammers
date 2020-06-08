@@ -27,8 +27,16 @@ pub enum MenuAction
 }
 
 pub fn do_action(game_mode    : &mut mode::Mode,
-                 menu_pointer : &mut Option<&menu::MenuNode>,
-                 menu_action  : &MenuAction)
+                 menu_action  : &MenuAction,
+                 menu_cursor  : &menu::MenuItem)
 {
-    
+
+    match menu_action
+    {
+        CursorUp   => {}
+        CursorDown => {}
+        Select     => {}
+        Resize     => {} // Do nothing.
+        Invalid    => {} // Do nothing.
+    }
 }
