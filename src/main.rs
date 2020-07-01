@@ -42,6 +42,7 @@ mod creature;
 mod action;
 mod direction;
 mod camera;
+mod chargen;
 mod menuaction;
 mod tile;
 mod tile_map;
@@ -67,20 +68,17 @@ fn main()
     let mut game_mode           = mode::Mode::TitleScreen;
     enter_title_mode(&mut game_mode);
 
-    let mut player = creature::Creature::new();
-    player.set_name("Avatar Steve".to_string());
-    player.set_player_control(true);
-    player.set_image('H');
-    player.set_x_pos(0);
-    player.set_y_pos(0);
-
+    // The default player will be replaced by either character creation
+    // Or by loading a character file.  If we ever see the default player
+    // In real gameplay, we should try to debug that.
+    let mut player = creature::Creature::Default_Player();
+    
     // Creatures on Map contains each creature that is in this area.
     let mut creatures_on_map: Vec<creature::Creature> = Vec::new();
     creatures_on_map.push(player);
     
     // The Console Buffer will hold the messages that we want to display.
     let mut console_buffer : Vec<String> = Vec::new();
-
     
     // Tile Database holds the definition of each tile we want to use.
     let tile_database = tile::build_tile_database();
@@ -128,6 +126,13 @@ fn main()
                            &mut menu_cursor,
                            &main_menu);
             },
+            mode::Mode::CharGen =>
+            {
+                chargen_iter(&game_window,
+                             &mut game_mode,
+                             &mut player);
+            }
+            
 
             mode::Mode::Quit =>
             {

@@ -89,6 +89,40 @@ impl Creature
         }
     } // End new
 
+    pub fn Default_Player() -> Creature
+    {
+        Creature
+        {
+            
+            name                  : "Default".to_string(),
+            x_pos                 : 0,
+            y_pos                 : 0,
+            
+            creativity            : 20,
+            focus                 : 20,
+            memory                : 20,
+            
+            max_health            : 60,
+            current_health        : 60,
+            
+            max_fatigue           : 60,
+            current_fatigue       : 60,
+            
+            max_sanity            : 60,
+            current_sanity        : 60,
+            
+            evasion               : 10,
+            endurance             : 10,
+            nullification         : 10,
+            
+            experience_have       : 0,
+            image                 : '@',
+            player_control        : true,
+            inventory             : Vec::new(),
+        }
+    } // End Default_Player
+   
+    
     pub fn get_name(&self) -> &String
     {
         &self.name
