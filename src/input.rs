@@ -54,16 +54,20 @@ pub fn process_keyboard(game_window : &pancurses::Window) -> action::Action
         {
             game_action = action::Action::Inventory;
         }
+        Some(pancurses::Input::Character('q')) =>
+        {
+            game_action = action::Action::QuitMode;
+        }
         Some(pancurses::Input::Character(_)) =>
         {
             game_action = action::Action::EndGame;
         }
-	Some(_) =>
-	{
+	     Some(_) =>
+	     {
             game_action = action::Action::Invalid;
-	}
-	None => () // Do nothing.
+	     }
+	     None => () // Do nothing.
     }
-
+    
     game_action // Return game_action
 }

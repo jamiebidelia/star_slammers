@@ -35,7 +35,7 @@ pub enum Action
     Resize,
     Inventory,
     QuitMode,
-    EndGame
+    EndGame,
 }
 
 

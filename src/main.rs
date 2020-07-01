@@ -35,8 +35,6 @@ COLOR_WHITE
 
 
 
-
-
 extern crate pancurses;
 
 mod item;
