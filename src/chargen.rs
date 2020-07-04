@@ -16,17 +16,34 @@
 #![allow(non_snake_case)]
 
 extern crate pancurses;
+
 use crate::creature;
+use crate::menuaction;
 use crate::mode;
 
 // The state machine here should be fairly linear.
 // We want to proceed sequentially through the choices
 enum CharGenStates
 {
-    WELCOME_TEXT,
-    ENTER_NAME,
-    PICK_PRONOUNS,
-    PICK_STATS,
-    CONFIRM_TEXT
-};
+    WelcomeText,
+    EnterName,
+    PickPronouns,
+    PickStats,
+    ConfirmText
+}
 
+
+pub fn draw_state(game_window : &pancurses::Window)
+{
+   
+}
+
+pub fn process_keyboard(game_window : &pancurses::Window) ->
+    menuaction::MenuAction
+{
+    menuaction::MenuAction::Invalid
+}
+
+pub fn do_action()
+{
+}

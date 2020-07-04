@@ -58,7 +58,6 @@ mod title;
 /// Starts the game
 fn main()
 {
-    let mut game_mode = mode::Mode::Adventure;
     let game_window   = initialize_game();   
     let mut end_game  = false;
 
@@ -74,6 +73,7 @@ fn main()
     let mut player = creature::Creature::Default_Player();
     
     // Creatures on Map contains each creature that is in this area.
+    // The player character is always index 0.
     let mut creatures_on_map: Vec<creature::Creature> = Vec::new();
     creatures_on_map.push(player);
     
@@ -130,7 +130,7 @@ fn main()
             {
                 chargen_iter(&game_window,
                              &mut game_mode,
-                             &mut player);
+                             &mut creatures_on_map[0]);
             }
             
 
@@ -220,12 +220,27 @@ fn title_iter(game_window  : &pancurses::Window,
     // Listen for a key and turn it into an action.
     let menu_action = title::process_keyboard(&game_window);
     
-    // For now just discard the action.
     menuaction::do_action(game_mode,
                           &menu_action,
                           menu_cursor,
                           menu);
 }
+
+
+/// In CharGen Mode, each iteration moves us through the state machine.
+/// It also draws the customization menus and handles player input.
+fn chargen_iter(game_window : &pancurses::Window,
+                game_mode   : &mut mode::Mode,
+                player      : &mut creature::Creature)
+{
+    chargen::draw_state(game_window);
+
+    let menu_action = chargen::process_keyboard(&game_window);
+
+    chargen::do_action();
+    
+}
+
 
 /// Gets PanCurses up and running and accepts keyboard input.
 fn initialize_game() -> pancurses::Window
