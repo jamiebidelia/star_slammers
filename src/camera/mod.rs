@@ -50,16 +50,64 @@ impl Camera {
     pub fn set_y_pos(&mut self, new_y_pos: i32) {
         self.y_pos = new_y_pos;
     }
+
+    fn validate_actor(&self,
+                      actor:    &creature::Creature,
+                      game_map: &tile_map::TileMap)
+    {
+        if *actor.get_x_pos() > *game_map.get_x_size()
+        {
+            let err = format!(
+                "camera::validate_actor:  actor x pos ({}) exceeds map x length ({})",
+                *actor.get_x_pos(),
+                *game_map.get_x_size());
+            crate::blow_up(err);
+        }
+        if *actor.get_y_pos() > *game_map.get_y_size()
+        {
+            let err = format!(
+                "camera::validate_actor:  actor y pos ({}) exceeds map y height ({})",
+                *actor.get_y_pos(),
+                *game_map.get_y_size());
+            crate::blow_up(err);
+        }
+    }
+
+    fn validate_map(&self, game_map: &tile_map::TileMap)
+    {
+        if *game_map.get_x_size() == 0
+        {
+            let err = format!(
+                "camera::validate_map:  map.x_size is 0.  Bad map layout!");
+            crate::blow_up(err);
+        }
+        if *game_map.get_y_size() == 0
+        {
+            let err = format!(
+                "camera::validate_map:  map.y_size is 0.  Bad map layout!");
+            crate::blow_up(err);
+        }
+    }
 } // End Camera Implementation.
 
+
+/// Moves the game camera such that the actor is centered if possible.
+/// Clamps to map edges, otherwise scrolling along X or Y is allowed.
 pub fn update_camera(game_camera: &mut Camera,
                      game_window: &pancurses::Window,
                      actor:       &creature::Creature,
                      game_map:    &tile_map::TileMap)
 {
+
+    // First, Validate the inputs or panic:
+    game_camera.validate_actor(actor, game_map);
+    game_camera.validate_map(game_map);
     
     // The camera's position is the top-left corner of the viewable screen.
 
+    // Note that the term "map" in this function refers to the MAP region
+    // of the interface, not the data of the tile_map.
+    
     // Find the camera bounds.
     let map_start_x = game_window.get_beg_x();
     let map_start_y = game_window.get_beg_y();

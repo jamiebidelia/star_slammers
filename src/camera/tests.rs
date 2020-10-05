@@ -36,15 +36,6 @@ mod tests
     // New Requirement:  Build validation functions that can be called for each
     // Camera method so can test interfaces without messy code duplication.
 
-
-    #[test]
-    fn update_camera_bad_window()
-    {
-        // This test is not implemented yet.  This test exposes a requirement
-        // That the pancurses window's initalized state be tracked, so we know
-        // If a shutdown window is being used.
-        panic!();
-    }
     
     // Let's validate that the actor is in a position that is on the freaking map.
     // Let's also validate that the actor is drawable.
@@ -66,8 +57,6 @@ mod tests
         // The Tile Map holds the terrain data for each square on the map.
         let mut tile_map    = crate::tile_map::load_map("maps/test.map".to_string(),
                                                       &tile_database);
-
-        crate::shut_down_game();
         
         // This call should panic, as the character is not within the bounds of the game!
         crate::camera::update_camera(&mut game_camera, &game_window, &player, &tile_map);
@@ -129,8 +118,8 @@ mod tests
         // This call should panic, as the character is not within the bounds of the game!
         crate::camera::update_camera(&mut game_camera, &game_window, &player, &tile_map);
     }
-
     
-    //draw_screen tests.
-    //draw_console tests.
+    //draw_screen tests
+    
+    //draw_console tests
 }
