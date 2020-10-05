@@ -1,9 +1,9 @@
 
 
 /*
-_____ _                _____ _                                                      
-/ ____| |              / ____| |                                        _            
-| (___ | |_ __ _ _ __  | (___ | | __ _ _ __ ___  _ __ ___   ___ _ __ ___(_)           
+  _____ _                _____ _                                                      
+ / ____| |              / ____| |                                        _            
+ | (___ | |_ __ _ _ __  | (___ | | __ _ _ __ ___  _ __ ___   ___ _ __ ___(_)           
 \___ \| __/ _` | '__|  \___ \| |/ _` | '_ ` _ \| '_ ` _ \ / _ \ '__/ __|             
 ____) | || (_| | |     ____) | | (_| | | | | | | | | | | |  __/ |  \__ \_            
 |_____/ \__\__,_|_|    |_____/|_|\__,_|_| |_| |_|_| |_| |_|\___|_|  |___(_)           
@@ -54,6 +54,7 @@ mod inventory_screen;
 mod rng;
 mod skill;
 mod title;
+
 
 /// Starts the game
 fn main()
@@ -262,8 +263,8 @@ fn shut_down_game()
 }
 
 /// Shuts the game down properly before causing an assertion.
-fn blow_up()
+fn blow_up(err : String)
 {
-    shut_down_game();                       // Shut down the pancurses window.
-    panic!();                               // We will now crash the game.
+    shut_down_game();                          // Shut down the pancurses window.
+    panic!(err);                               // We will now crash the game.
 }

@@ -36,6 +36,7 @@ impl TileMap
         &self.x_size
     }
 
+    #[cfg(test)]
     pub fn set_x_size(&mut self, new_x_size : u32)
     {
         self.x_size = new_x_size;
@@ -46,6 +47,7 @@ impl TileMap
         &self.y_size
     }
 
+    #[cfg(test)]
     pub fn set_y_size(&mut self, new_y_size : u32)
     {
         self.y_size = new_y_size;
