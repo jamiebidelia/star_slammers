@@ -15,6 +15,8 @@
 
 #![allow(non_snake_case)]
 #![allow(clippy::suspicious_else_formatting)]
+//! This module handles the construction and movement of the game camera.
+
 
 extern crate pancurses;
 use crate::creature;
@@ -22,6 +24,10 @@ use crate::tile_map;
 
 mod tests;
 
+/// The Camera struct embodies the camera that follows the player
+/// character as they move around maps.  The struct supports
+/// X and Y scrolling, but does not support following non-player
+/// objects.
 pub struct Camera {
     x_pos: i32, // Position of the left-hand boundary of the camera.
     y_pos: i32, // Position of the right-hand boundary of the camera.
@@ -31,26 +37,34 @@ pub struct Camera {
 }
 
 impl Camera {
+
+    /// Provides a new camera at position (0,0).
     pub fn new() -> Camera {
         Camera { x_pos: 0, y_pos: 0 }
     }
 
+    /// Getter for x_pos.
     pub fn get_x_pos(&self) -> &i32 {
         &self.x_pos
     }
 
+    /// Setter for x_pos.  Debating why this is pub / exists.
     pub fn set_x_pos(&mut self, new_x_pos: i32) {
         self.x_pos = new_x_pos;
     }
 
+    /// Getter for y_pos.
     pub fn get_y_pos(&self) -> &i32 {
         &self.y_pos
     }
 
+    /// Setter for y_pos.  Debating why this is pub / exists.
     pub fn set_y_pos(&mut self, new_y_pos: i32) {
         self.y_pos = new_y_pos;
     }
 
+    /// Validates that an actor is on the map as a utility method.
+    /// Panics if invalid.
     fn validate_actor(&self,
                       actor:    &creature::Creature,
                       game_map: &tile_map::TileMap)
@@ -73,6 +87,8 @@ impl Camera {
         }
     }
 
+    /// Validates that a map does not have 0-length dimensions as a utility method.
+    /// Panics if invalid.
     fn validate_map(&self, game_map: &tile_map::TileMap)
     {
         if *game_map.get_x_size() == 0

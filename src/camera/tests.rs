@@ -13,6 +13,8 @@
  |_____|_| |_|_| |_|_| |_|_|\__\___| /_/    \_\__,_| \_/ \___|_| |_|\__|\__,_|_|  \___|
 */
 
+//! This module contains the test code for the camera module.
+
 use crate::camera;
 
 use crate::creature;

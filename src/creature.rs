@@ -15,12 +15,11 @@
 
 #![doc(html_no_source)]
 #![allow(non_snake_case)]
+//! This module encompasses a creature:  the player, NPCs, and monsters qualify as creatures.
 
 use crate::item;
 use crate::rng;
 use crate::skill;
-
-// //! This module encompasses a creature:  the player, NPCs, and monsters qualify as creatures.
 
 /// The Creature represents all entities that can move and act.
 pub struct Creature {

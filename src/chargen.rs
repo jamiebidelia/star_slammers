@@ -14,6 +14,7 @@
  */
 
 #![allow(non_snake_case)]
+//! This module handles the creation of new adventurers.
 
 extern crate pancurses;
 
