@@ -182,11 +182,7 @@ fn adventure_iter(game_window       : &pancurses::Window,
                       &mut creatures_on_map[0],
                       end_game,
                       console_buffer);      // Process the game action.
-    
-    camera::update_camera(game_camera,
-                          game_window,
-                          &creatures_on_map[0],
-                          tile_map);
+
 } // End adventure_iter.
 
 /// In Inventory Mode, each iteration handles player input for changing gear,
