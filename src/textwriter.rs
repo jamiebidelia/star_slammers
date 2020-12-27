@@ -14,6 +14,8 @@
  */
 
 #![allow(non_snake_case)]
+#![allow(non_camel_case_types)]
+
 //! This module handles input into the system by writeable text box.
 
 extern crate pancurses;
@@ -21,7 +23,7 @@ extern crate pancurses;
 
 /// Key_Type checks if the key pressed was a valid key to add to a TextWriter, or
 /// if it signals done (enter) or cancel (esc).
-enum Key_Type
+enum KeyType
 {
     BACKSPACE_PRESSED,
     KEY_PRESSED,
@@ -34,14 +36,14 @@ enum Key_Type
 /// using the keyboard.
 pub struct TextWriter
 {
-    max_len       : u8;
-    text_field    : Vec<char>;
-    prompt        : String;
-    allow_nums    : bool;
-    allow_chars   : bool;
-    allow_special : bool;
-    start_x       : u8;
-    start_y       : u8;
+    max_len       : u8,
+    text_field    : Vec<char>,
+    prompt        : String,
+    allow_nums    : bool,
+    allow_chars   : bool,
+    allow_special : bool,
+    start_x       : u8,
+    start_y       : u8,
 }
 
 impl TextWriter
@@ -49,15 +51,16 @@ impl TextWriter
 
     /// run fills in a TextWriter with the initial data and
     /// runs the processing loop.
-    pub fn run(max_len       : u8;
-               prompt        : String;
-               allow_nums    : bool;
-               allow_chars   : bool;
-               allow_special : bool;
-               start_x       : u8;
-               start_y       : u8;) -> Option<String>
+    pub fn run(max_len       : u8,
+               prompt        : String,
+               allow_nums    : bool,
+               allow_chars   : bool,
+               allow_special : bool,
+               start_x       : u8,
+               start_y       : u8,
+               game_window   : &pancurses::Window,) -> Option<String>
     {
-        let textWriter : TextWriter =
+        let textWriter = TextWriter
         {
             max_len,
             text_field: Vec::new(),
@@ -70,8 +73,7 @@ impl TextWriter
         };
 
         // Run the processing loop and return the results.
-         textWriter.input_loop()
-        
+         textWriter.input_loop(game_window)
     }
 
     /// is_alpha returns true if the passed char is alphabetical,
@@ -82,11 +84,11 @@ impl TextWriter
         {
             'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j' | 'k' |
             'l' | 'm' | 'n' | 'o' | 'p' | 'q' | 'r' | 's' | 't' | 'u' |
-            'v' | 'w' | 'x' | 'y' | 'z' | => true,
+            'v' | 'w' | 'x' | 'y' | 'z' => true,
 
             'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I' | 'J' | 'K' |
             'L' | 'M' | 'N' | 'O' | 'P' | 'Q' | 'R' | 'S' | 'T' | 'U' |
-            'V' | 'W' | 'X' | 'Y' | 'Z' | => true,
+            'V' | 'W' | 'X' | 'Y' | 'Z' => true,
 
             _ => false,
         }
@@ -119,54 +121,75 @@ impl TextWriter
         }
     }
     
-    pub fn input_key(&mut self, game_window : &pancurses::Window) -> Key_Type
+    pub fn input_key(&mut self, game_window : &pancurses::Window) -> KeyType
     {
         let input = game_window.getch();
         
-        let mut result = KEY_PRESSED;
+        let mut result = KeyType::KEY_PRESSED;
 
         let ESC : char = '\x1B'; 
 
-        match input()
+        match input
         {
-            KeyBackspace =>
-                if text_field.len() > 0
-                {
-                    text_field.remove(len-1);
-                    result = BACKSPACE_PRESSED;
-                }
-            
-            KeyEnter =>
-                result = ENTER_PRESSED;
-
-            Character(key) =>
+            None =>
             {
-                if is_num(key) && allow_nums
+                result = KeyType::KEY_UNKNOWN;
+            }
+            
+            Some(i) =>
+            {
+                match i
                 {
-                    text_field.push(key);
-                    result == KEY_PRESSED;
-                }
-                else if is_alpha(key) && allow_chars
-                {
-                    text_field.push(key);
-                    result == KEY_PRESSED;
-                }
-                else if is_special(key) && allow_special
-                {
-                    text_field.push(key);
-                    result == KEY_PRESSED;
-                }
-                else if key == ESC
-                {
-                    result == ESC_PRESSED;
-                }
-                else
-                {
-                    result == KEY_UNKNOWN;
+                    KeyBackspace =>
+                        if self.text_field.len() > 0
+                        {
+                            self.text_field.pop();
+                            result = KeyType::BACKSPACE_PRESSED;
+                        }
+                    
+                    KeyEnter =>
+                    {
+                        result = KeyType::ENTER_PRESSED;
+                    }
+                    
+                    pancurses::Input::Character(key) =>
+                    {
+                        if TextWriter::is_num(&key) && self.allow_nums &&
+                            self.text_field.len() < self.max_len as usize
+                        {
+                            self.text_field.push(key);
+                            result = KeyType::KEY_PRESSED;
+                        }
+                        else if TextWriter::is_alpha(&key) && self.allow_chars &&
+                            self.text_field.len() < self.max_len as usize
+                        {
+                            self.text_field.push(key);
+                            result = KeyType::KEY_PRESSED;
+                        }
+                        else if TextWriter::is_special(&key) && self.allow_special &&
+                            self.text_field.len() < self.max_len as usize
+                        {
+                            self.text_field.push(key);
+                            result = KeyType::KEY_PRESSED;
+                        }
+                        else if key == ESC
+                        {
+                            result = KeyType::ESC_PRESSED;
+                        }
+                        else
+                        {
+                            result = KeyType::KEY_UNKNOWN;
+                        }
+                    }
+                    
                 }
             }
         }
+        //Return the result.
+        result
     }
+
+                   
 
     /// input_loop populates the string vector by listening for inputs.
     /// It returns Some(String) if successful, and None if ESC was pressed.
@@ -180,16 +203,16 @@ impl TextWriter
         // the key was enter.  If it was ESC, just give None.
         while !done
         {
-            let result = input_key(game_window);
+            let input = self.input_key(game_window);
             
-            if result == ENTER_PRESSED
+            if input == KeyType::ENTER_PRESSED
             {
                 // Move the string out of the TextField,
                 // as the struct will die soon.
-                result = Some(text_field);
+                result = Some(self.text_field);
                 done   = true;
             }
-            else if result == ESC_PRESSED
+            else if input == KeyType::ESC_PRESSED
             {
                 // Abort here.
                 done = true;

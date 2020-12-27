@@ -22,6 +22,8 @@ use crate::creature;
 use crate::menuaction;
 use crate::mode;
 
+use crate::textwriter;
+
 // The state machine here should be fairly linear.
 // We want to proceed sequentially through the choices
 enum CharGenStates
@@ -71,16 +73,20 @@ pub fn EnterName(game_window : &pancurses::Window)
     game_window.mvprintw(start_y + 1, center_welcome, welcome_text);
     game_window.mvprintw(start_y + 2, center_welcome, welcome_dots);
 
-    game_window.mvprintw(start_y + 4, center_welcome, name_field);
 
-    let name_entry_start_x = game_window.get_cur_x() + 1;
-    let name_entry_y = start_y + 4;
-    
-    game_window.mvprintw(start_y + 4, name_entry_start_x, "_");
+    let max_chars = 32 as u8;
+    let x_off     = center_welcome as u8;
+    let y_off     = (start_y + 4) as u8;
+    let prompt    = "Name: ".to_string();
 
-    let name = NameLoop(game_window,
-                        name_entry_y,
-                        name_entry_start_x);
+    let name_str = textwriter::TextWriter::run(max_chars,       // max_len
+                                               prompt,          // prompt
+                                               true,            // allow_nums
+                                               true,            // allow_chars
+                                               true,            // allow_special
+                                               x_off,           // start_x
+                                               y_off,           // start_y
+                                               game_window);    // game_window
 }
 
 fn NameLoop(game_window : &pancurses::Window,
