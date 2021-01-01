@@ -87,13 +87,8 @@ pub fn EnterName(game_window : &pancurses::Window)
                                                x_off,           // start_x
                                                y_off,           // start_y
                                                game_window);    // game_window
-}
 
-fn NameLoop(game_window : &pancurses::Window,
-            y           : i32,
-            start_y     : i32) -> String
-{
-    "Default".to_string()
+    game_window.mvprintw(15, 2, "NEXT");
 }
 
 

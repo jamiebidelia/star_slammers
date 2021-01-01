@@ -76,7 +76,7 @@ impl TextWriter
         // Run the processing loop and return the results.
         let got_text = textWriter.input_loop(game_window);
 
-        //Return area:  Either 
+
         if got_text
         {
             Some(textWriter.text_field.into_iter().collect())
@@ -138,8 +138,8 @@ impl TextWriter
         
         let mut result = KeyType::KEY_PRESSED;
 
-        let ESC       : char = '\x1B';
-        let BACKSPACE : char = '\x08';
+        let ENTER : char = '\n';
+        let ESC   : char = '\x1B';
 
         let ASCII_LOWER : char ='\x20';
         let ASCII_UPPER : char ='\x7E';
@@ -155,20 +155,22 @@ impl TextWriter
                     self.text_field.pop();
                 }
             }
+            
             Some(pancurses::Input::Character(key)) =>
             {
+               
+                if key == ESC   {result = KeyType::ESC_PRESSED;}
 
-                game_window.mvprintw(15, 2, key.to_string());
-                
-                if key == ESC {result = KeyType::ESC_PRESSED;}
-                
-                if key == BACKSPACE
+                // Only accept an Enter press if there is data entered.
+                if key == ENTER
                 {
-                    result = KeyType::BACKSPACE_PRESSED;
-
                     if self.text_field.len() > 0
                     {
-                        self.text_field.pop();
+                        result = KeyType::ENTER_PRESSED;
+                    }
+                    else
+                    {
+                        result = KeyType::KEY_PRESSED;
                     }
                 }
 
@@ -219,35 +221,15 @@ impl TextWriter
 
         let mut count = 0;
         
-        game_window.mvprintw(42,
-                             2,
-                             "                        .");
-
-
-        
         // Run until either enter or esc is pressed, then return the results if
         // the key was enter.  If it was ESC, just give None.
         while !done
         {
             count = count + 1;
-            game_window.mvprintw(39,
-                                 2,
-                                 "Top of loop.");
-
-            
+           
             // Draw the text box, then wait on input from the user.
             self.draw(game_window);
-
-            game_window.mvprintw(40,
-                                 2,
-                                 "Before Input_Key.");
-
-            
             let input = self.input_key(game_window);
-
-            game_window.mvprintw(41,
-                                 2,
-                                 "After Input_Key.");
 
             match input
             {
@@ -255,10 +237,6 @@ impl TextWriter
                 {
                     result = true;
                     done   = true;
-                    
-                    game_window.mvprintw(42,
-                                         2,
-                                         "Enter Key Entered.");
                 }
 
                 KeyType::ESC_PRESSED =>
@@ -266,42 +244,15 @@ impl TextWriter
                     // Abort here.
                     result = false;
                     done   = true;
-                    game_window.mvprintw(42,
-                                         2,
-                                         "ESC Key Entered.");
                 }
-
-                KeyType::KEY_PRESSED =>
-                {
-                    game_window.mvprintw(42,
-                                         2,
-                                         "AlphNumSpec Key Entered.");
-                }
-
-                KeyType::BACKSPACE_PRESSED =>
-                {
-                }
-
+                
+                KeyType::BACKSPACE_PRESSED |
+                KeyType::KEY_PRESSED |
                 KeyType::KEY_UNKNOWN =>
                 {
                 }
+                    
             }
-
-
-
-            let text : String = self.text_field.iter().collect();
-            game_window.mvprintw(44,
-                                 2,
-                                 text);
-            
-            game_window.mvprintw(45,
-                                 2,
-                                 "ITERS:  ".to_owned() + &count.to_string());
-
-            game_window.mvprintw(46,
-                                 2,
-                                 "Len:  ".to_owned() + &self.text_field.len().to_string());
-            
         }
         
         // Return the result back (Either None or Some(String)).
