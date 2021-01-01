@@ -138,65 +138,72 @@ impl TextWriter
         
         let mut result = KeyType::KEY_PRESSED;
 
-        let ESC : char = '\x1B'; 
+        let ESC       : char = '\x1B';
+        let BACKSPACE : char = '\x08';
 
+        let ASCII_LOWER : char ='\x20';
+        let ASCII_UPPER : char ='\x7E';
+       
         match input
         {
+            Some(pancurses::Input::KeyBackspace) =>
+            {
+                result = KeyType::BACKSPACE_PRESSED;
+                
+                if self.text_field.len() > 0
+                {
+                    self.text_field.pop();
+                }
+            }
+            Some(pancurses::Input::Character(key)) =>
+            {
+
+                game_window.mvprintw(15, 2, key.to_string());
+                
+                if key == ESC {result = KeyType::ESC_PRESSED;}
+                
+                if key == BACKSPACE
+                {
+                    result = KeyType::BACKSPACE_PRESSED;
+
+                    if self.text_field.len() > 0
+                    {
+                        self.text_field.pop();
+                    }
+                }
+
+                if key >= ASCII_LOWER && key <= ASCII_UPPER
+                {
+                    result = KeyType::KEY_PRESSED;
+
+
+                    if TextWriter::is_alpha(&key) && self.allow_chars &&
+                        self.text_field.len() < self.max_len as usize
+                    {
+                        self.text_field.push(key);
+                    }
+                    if TextWriter::is_num(&key) && self.allow_nums &&
+                        self.text_field.len() < self.max_len as usize
+                    {
+                        self.text_field.push(key);
+                    }
+                    else if TextWriter::is_special(&key) && self.allow_special &&
+                        self.text_field.len() < self.max_len as usize
+                    {
+                        self.text_field.push(key);
+                    }
+                }
+            }
+            Some(_) =>
+            {
+                result = KeyType::KEY_UNKNOWN;
+            }
             None =>
             {
                 result = KeyType::KEY_UNKNOWN;
             }
-            
-            Some(i) =>
-            {
-                match i
-                {
-                    KeyBackspace =>
-                        if self.text_field.len() > 0
-                        {
-                            self.text_field.pop();
-                            result = KeyType::BACKSPACE_PRESSED;
-                        }
-                    
-                    KeyEnter =>
-                    {
-                        result = KeyType::ENTER_PRESSED;
-                    }
-                    
-                    pancurses::Input::Character(key) =>
-                    {
-                        if TextWriter::is_num(&key) && self.allow_nums &&
-                            self.text_field.len() < self.max_len as usize
-                        {
-                            self.text_field.push(key);
-                            result = KeyType::KEY_PRESSED;
-                        }
-                        else if TextWriter::is_alpha(&key) && self.allow_chars &&
-                            self.text_field.len() < self.max_len as usize
-                        {
-                            self.text_field.push(key);
-                            result = KeyType::KEY_PRESSED;
-                        }
-                        else if TextWriter::is_special(&key) && self.allow_special &&
-                            self.text_field.len() < self.max_len as usize
-                        {
-                            self.text_field.push(key);
-                            result = KeyType::KEY_PRESSED;
-                        }
-                        else if key == ESC
-                        {
-                            result = KeyType::ESC_PRESSED;
-                        }
-                        else
-                        {
-                            result = KeyType::KEY_UNKNOWN;
-                        }
-                    }
-                    
-                }
-            }
         }
-        //Return the result.
+        
         result
     }
 
@@ -210,25 +217,93 @@ impl TextWriter
         let mut done   : bool = false;
         let mut result : bool = false;
 
+        let mut count = 0;
+        
+        game_window.mvprintw(42,
+                             2,
+                             "                        .");
+
+
+        
         // Run until either enter or esc is pressed, then return the results if
         // the key was enter.  If it was ESC, just give None.
         while !done
         {
+            count = count + 1;
+            game_window.mvprintw(39,
+                                 2,
+                                 "Top of loop.");
+
+            
             // Draw the text box, then wait on input from the user.
             self.draw(game_window);
-            let input = self.input_key(game_window);
+
+            game_window.mvprintw(40,
+                                 2,
+                                 "Before Input_Key.");
+
             
-            if input == KeyType::ENTER_PRESSED
+            let input = self.input_key(game_window);
+
+            game_window.mvprintw(41,
+                                 2,
+                                 "After Input_Key.");
+
+            match input
             {
-                result = true;
-                done   = true;
+                KeyType::ENTER_PRESSED =>
+                {
+                    result = true;
+                    done   = true;
+                    
+                    game_window.mvprintw(42,
+                                         2,
+                                         "Enter Key Entered.");
+                }
+
+                KeyType::ESC_PRESSED =>
+                {
+                    // Abort here.
+                    result = false;
+                    done   = true;
+                    game_window.mvprintw(42,
+                                         2,
+                                         "ESC Key Entered.");
+                }
+
+                KeyType::KEY_PRESSED =>
+                {
+                    game_window.mvprintw(42,
+                                         2,
+                                         "AlphNumSpec Key Entered.");
+                }
+
+                KeyType::BACKSPACE_PRESSED =>
+                {
+                }
+
+                KeyType::KEY_UNKNOWN =>
+                {
+                }
             }
-            else if input == KeyType::ESC_PRESSED
-            {
-                // Abort here.
-                done = true;
-            }
+
+
+
+            let text : String = self.text_field.iter().collect();
+            game_window.mvprintw(44,
+                                 2,
+                                 text);
+            
+            game_window.mvprintw(45,
+                                 2,
+                                 "ITERS:  ".to_owned() + &count.to_string());
+
+            game_window.mvprintw(46,
+                                 2,
+                                 "Len:  ".to_owned() + &self.text_field.len().to_string());
+            
         }
+        
         // Return the result back (Either None or Some(String)).
         result
     }
@@ -245,11 +320,11 @@ impl TextWriter
 
         let start_text_x  = self.start_x + self.prompt.len() as u8 + 2;
         let mut step      : usize = 0;
-        let mut met_limit = false;
         let mut done      = false;
 
         while !done
         {
+            if step == self.max_len as usize { done = true; }
 
             if step < self.text_field.len()
             {
@@ -258,13 +333,9 @@ impl TextWriter
                 game_window.mvprintw(self.start_y as i32,
                                 (start_text_x + step as u8) as i32,
                                      the_char);
-                
-                step  = step + 1;
             }
-            
-            if step >= self.text_field.len()
+            else
             {
-                done = true;
                 if step < self.max_len as usize
                 {
                     game_window.mvprintw(self.start_y as i32,
@@ -273,6 +344,8 @@ impl TextWriter
                 }
                   
             }
+
+            step = step + 1;
         }
     }
 }

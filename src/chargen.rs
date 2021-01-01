@@ -74,7 +74,7 @@ pub fn EnterName(game_window : &pancurses::Window)
     game_window.mvprintw(start_y + 2, center_welcome, welcome_dots);
 
 
-    let max_chars = 32 as u8;
+    let max_chars = 8 as u8;
     let x_off     = center_welcome as u8;
     let y_off     = (start_y + 4) as u8;
     let prompt    = "Name: ".to_string();
