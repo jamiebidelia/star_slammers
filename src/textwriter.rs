@@ -23,6 +23,7 @@ extern crate pancurses;
 
 /// Key_Type checks if the key pressed was a valid key to add to a TextWriter, or
 /// if it signals done (enter) or cancel (esc).
+#[derive(PartialEq)]
 enum KeyType
 {
     BACKSPACE_PRESSED,
@@ -60,7 +61,7 @@ impl TextWriter
                start_y       : u8,
                game_window   : &pancurses::Window,) -> Option<String>
     {
-        let textWriter = TextWriter
+        let mut textWriter = TextWriter
         {
             max_len,
             text_field: Vec::new(),
@@ -73,7 +74,17 @@ impl TextWriter
         };
 
         // Run the processing loop and return the results.
-         textWriter.input_loop(game_window)
+        let got_text = textWriter.input_loop(game_window);
+
+        //Return area:  Either 
+        if got_text
+        {
+            Some(textWriter.text_field.into_iter().collect())
+        }
+        else
+        {
+            None
+        }
     }
 
     /// is_alpha returns true if the passed char is alphabetical,
@@ -192,24 +203,24 @@ impl TextWriter
                    
 
     /// input_loop populates the string vector by listening for inputs.
-    /// It returns Some(String) if successful, and None if ESC was pressed.
+    /// It returns true if successful, and false if ESC was pressed.
     pub fn input_loop(&mut self,
-                      game_window : &pancurses::Window) -> Option<String>
+                      game_window : &pancurses::Window) -> bool
     {
-        let mut done   : bool           = false;
-        let mut result : Option<String> = None;
+        let mut done   : bool = false;
+        let mut result : bool = false;
 
         // Run until either enter or esc is pressed, then return the results if
         // the key was enter.  If it was ESC, just give None.
         while !done
         {
+            // Draw the text box, then wait on input from the user.
+            self.draw(game_window);
             let input = self.input_key(game_window);
             
             if input == KeyType::ENTER_PRESSED
             {
-                // Move the string out of the TextField,
-                // as the struct will die soon.
-                result = Some(self.text_field);
+                result = true;
                 done   = true;
             }
             else if input == KeyType::ESC_PRESSED
@@ -222,7 +233,46 @@ impl TextWriter
         result
     }
 
+    /// draw draws the prompt and current text_field to the screen.  It also
+    /// displays an underscore, _, after the text if there is room
+    /// for additional input.
     pub fn draw(&self, game_window : &pancurses::Window)
     {
+        //Draw the Prompt;
+        game_window.mvprintw(self.start_y as i32,
+                             self.start_x as i32,
+                             &self.prompt);
+
+        let start_text_x  = self.start_x + self.prompt.len() as u8 + 2;
+        let mut step      : usize = 0;
+        let mut met_limit = false;
+        let mut done      = false;
+
+        while !done
+        {
+
+            if step < self.text_field.len()
+            {
+                let the_char = &self.text_field[step].to_string();
+                
+                game_window.mvprintw(self.start_y as i32,
+                                (start_text_x + step as u8) as i32,
+                                     the_char);
+                
+                step  = step + 1;
+            }
+            
+            if step >= self.text_field.len()
+            {
+                done = true;
+                if step < self.max_len as usize
+                {
+                    game_window.mvprintw(self.start_y as i32,
+                                         (start_text_x + step as u8) as i32,
+                                         "_");
+                }
+                  
+            }
+        }
     }
 }
