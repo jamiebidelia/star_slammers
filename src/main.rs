@@ -51,6 +51,7 @@ mod inventory_screen;
 mod rng;
 mod skill;
 mod textwriter;
+mod attributeslider;
 mod title;
 
 
