@@ -22,6 +22,7 @@ use crate::creature;
 use crate::menuaction;
 use crate::mode;
 
+use crate::attributeslider;
 use crate::textwriter;
 
 // The state machine here should be fairly linear.
@@ -87,6 +88,8 @@ pub fn EnterName(game_window : &pancurses::Window)
                                                x_off,           // start_x
                                                y_off,           // start_y
                                                game_window);    // game_window
+
+    let attributes = attributeslider::AttributeSlider::run(x_off + 3, y_off + 3, game_window);
 
     game_window.mvprintw(15, 2, "NEXT");
 }

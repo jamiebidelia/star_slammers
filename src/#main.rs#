@@ -51,6 +51,7 @@ mod inventory_screen;
 mod rng;
 mod skill;
 mod textwriter;
+mod attributeslider;
 mod title;
 
 
@@ -152,6 +153,7 @@ fn enter_title_mode(game_mode    : &mut mode::Mode)
 {
     *game_mode     = mode::Mode::TitleScreen;
 }
+
 
 /// In Adventure Mode, each iteration is a step in the game loop.
 /// We draw the screen, take an action, and update the game camera.

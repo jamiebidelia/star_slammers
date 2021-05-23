@@ -19,6 +19,8 @@
 //! This module handles the adding and removing of attributes
 //! via key commands (up/down to select, left/right to add or remove).
 
+extern crate pancurses;
+
 /// Attribute composes the base unit of an attribute slider.
 pub struct Attribute
 {
@@ -92,12 +94,55 @@ pub struct AttributeSlider
     attributes  : Vec<Attribute>,
     cursor_pos  : u8,
     points_left : u8,
+    start_x     : u8,
+    start_y     : u8,
 }
 
 
 impl AttributeSlider
 {
-    pub fn run() -> (u8, u8, u8)
+
+    fn draw(&self, game_window : &pancurses::Window)
+    {
+        let CURSOR        = "-->";
+        let CURSOR_OFFSET = 4;
+        let NUM_OFFSET    = 14;
+        
+        for i in 0 .. self.attributes.len()
+        {
+
+            let val = self.attributes[i].value;
+            
+            // Print the cursor, if on the correct line.
+            if (self.cursor_pos == i as u8)
+            {
+                game_window.mvprintw((self.start_y + i as u8)       as i32,
+                                     (self.start_x - CURSOR_OFFSET) as i32,
+                                     CURSOR);
+            }
+
+            // Print the attribute's name.
+            game_window.mvprintw((self.start_y + i as u8) as i32,
+                                 self.start_x as i32,
+                                 &self.attributes[i].name);
+
+            // Print the attribute's current value.
+            game_window.mvprintw((self.start_y + i as u8)     as i32,
+                                 (self.start_x + NUM_OFFSET)  as i32,
+                                 val.to_string());
+        }
+
+    }
+
+    fn input_loop(&self, game_window : &pancurses::Window)
+    {
+        //First let's draw what we have.
+        self.draw(game_window);
+    }
+    
+    pub fn run(start_x     : u8,
+               start_y     : u8,
+               game_window : &pancurses::Window) -> (u8, u8, u8)
     {
         let creativity_slider =
             Attribute::new("Creativity".to_string(), //name
@@ -124,13 +169,18 @@ impl AttributeSlider
         let attribute_vec = vec!(creativity_slider, focus_slider, memory_slider);
 
         // Construct the slider and move the vector into it.
-        let slider = AttributeSlider
+        let mut slider = AttributeSlider
         {
             attributes  : attribute_vec,
             cursor_pos  : 0,
             points_left : 5,
+            start_x     : start_x,
+            start_y     : start_y 
         };
 
+        slider.input_loop(game_window);
+        
+        
         // Return a tuple of the the finished attributes.
         (slider.attributes[0].value,
          slider.attributes[1].value,
