@@ -106,7 +106,7 @@ impl AttributeSlider
     {
         let CURSOR        = "-->";
         let CURSOR_OFFSET = 4;
-        let NUM_OFFSET    = 14;
+        let NUM_OFFSET    = 20;
         
         for i in 0 .. self.attributes.len()
         {
@@ -132,8 +132,23 @@ impl AttributeSlider
                                  val.to_string());
         }
 
+        let REMAINING_Y = (self.start_y as i32 +
+                           self.attributes.len() as i32 +
+                           1);
+        
+        let POINTS_REM  = "Points Remaining";
+        let REMAINING   = self.points_left.to_string();
+        
+        game_window.mvprintw(REMAINING_Y,
+                             self.start_x as i32,
+                             POINTS_REM);
+
+        game_window.mvprintw(REMAINING_Y,
+                             (self.start_x + NUM_OFFSET) as i32,
+                             REMAINING);
     }
 
+    
     fn input_loop(&self, game_window : &pancurses::Window)
     {
         //First let's draw what we have.
@@ -150,7 +165,6 @@ impl AttributeSlider
                           23,           // value
                           30,           // max
                           10);          // min
-
 
         let focus_slider =
             Attribute::new("Focus".to_string(), //name
