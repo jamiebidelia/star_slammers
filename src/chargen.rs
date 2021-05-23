@@ -79,7 +79,7 @@ pub fn EnterName(game_window : &pancurses::Window)
     let x_off     = center_welcome as u8;
     let y_off     = (start_y + 4) as u8;
     let prompt    = "Name: ".to_string();
-
+    
     let name_str = textwriter::TextWriter::run(max_chars,       // max_len
                                                prompt,          // prompt
                                                true,            // allow_nums
@@ -89,6 +89,16 @@ pub fn EnterName(game_window : &pancurses::Window)
                                                y_off,           // start_y
                                                game_window);    // game_window
 
+
+    let welcome_dots   = "***********************************************";
+    let welcome_text   = "* Welcome traveller.  Choose your attributes. *";
+    let center_welcome = std::cmp::max(center_x - (welcome_text.len() / 2) as i32, 0);
+
+    game_window.mvprintw(start_y,     center_welcome, welcome_dots);
+    game_window.mvprintw(start_y + 1, center_welcome, welcome_text);
+    game_window.mvprintw(start_y + 2, center_welcome, welcome_dots);
+
+    
     let attributes = attributeslider::AttributeSlider::run(x_off + 3, y_off + 3, game_window);
 
     game_window.mvprintw(15, 2, "NEXT");
