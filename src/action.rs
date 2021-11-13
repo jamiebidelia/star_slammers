@@ -16,6 +16,7 @@
 
 #![allow(non_snake_case)]
 #![allow(clippy::suspicious_else_formatting)]
+//! This module comprises the actions a player can take in Adventure Mode.
 
 extern crate pancurses;
 use crate::creature;

@@ -13,7 +13,6 @@
  |_____|_| |_|_| |_|_| |_|_|\__\___| /_/    \_\__,_| \_/ \___|_| |_|\__|\__,_|_|  \___|
 */
 
-use crate::menu;
 use crate::mode;
 
 
@@ -92,7 +91,7 @@ pub fn null_action(cur_mode   : &mut mode::Mode,
 pub fn new_game_action(cur_mode   : &mut mode::Mode,
                        cur_cursor : &mut usize)
 {
-    *cur_mode = mode::Mode::Adventure;
+    *cur_mode = mode::Mode::CharGen;
 }
 
 pub fn quit_action(cur_mode   : &mut mode::Mode,

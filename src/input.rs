@@ -13,6 +13,7 @@
  |_____|_| |_|_| |_|_| |_|_|\__\___| /_/    \_\__,_| \_/ \___|_| |_|\__|\__,_|_|  \___|
 */
 
+//! This module processes input events and translates them into actions.
 
 extern crate pancurses;
 

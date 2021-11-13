@@ -18,6 +18,7 @@
 pub enum Mode
 {
     Adventure,
+    CharGen,
     Inventory,
     Quit,
     TitleScreen,

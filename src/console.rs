@@ -15,6 +15,9 @@
 
 
 #![allow(non_snake_case)]
+//! This module handles the text console that displays
+/// adventure mode actions and events.
+
 
 pub fn post_to_console(text       : String,
                    console_buffer : &mut Vec<String>)

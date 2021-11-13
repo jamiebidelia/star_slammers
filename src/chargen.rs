@@ -11,153 +11,121 @@
    | | | '_ \|  _| | '_ \| | __/ _ \   / /\ \ / _` \ \ / / _ \ '_ \| __| | | | '__/ _ \
   _| |_| | | | | | | | | | | ||  __/  / ____ \ (_| |\ V /  __/ | | | |_| |_| | | |  __/
  |_____|_| |_|_| |_|_| |_|_|\__\___| /_/    \_\__,_| \_/ \___|_| |_|\__|\__,_|_|  \___|
-*/
-
-
+ */
 
 #![allow(non_snake_case)]
-
+//! This module handles the creation of new adventurers.
 
 extern crate pancurses;
 
+use crate::creature;
+use crate::menuaction;
+use crate::mode;
 
-mod item;
-mod creature;
-mod action;
-mod direction;
-mod camera;
-mod tile;
-mod tile_map;
-mod console;
-mod input;
-mod mode;
-mod inventory_screen;
+use crate::attributeslider;
+use crate::textwriter;
 
 
-fn main()
+pub fn do_chargen(game_window : &pancurses::Window) -> creature::Creature
 {
-    let mut game_mode        = mode::Mode::Adventure;
-    let game_window          = initialize_game();   
-    let mut end_game         = false;
 
-    let mut player = creature::Creature::new();
-    player.set_name("Avatar Steve".to_string());
-    player.set_player_control(true);
-    player.set_image('H');
-    player.set_x_pos(0);
-    player.set_y_pos(0);
-
-    // Creatures on Map contains each creature that is in this area.
-    let mut creatures_on_map: Vec<creature::Creature> = Vec::new();
-    creatures_on_map.push(player);
+    let mut character = creature::Creature::Default_Player();
     
-    // The Console Buffer will hold the messages that we want to display.
-    let mut console_buffer : Vec<String> = Vec::new();
+    // The max values it gives are not printable.  So we need to
+    // Subtract 1 from each to reach our last index.  Be mindful of that.
+    let start_x = game_window.get_beg_x();
+    let end_x   = game_window.get_max_x();
 
+    let start_y = game_window.get_beg_y();
+    let end_y   = game_window.get_max_y();
+
+    let center_x = (end_x + start_x) / 2;
+
+    let welcome_dots   = "****************************************";
+    let welcome_text   = "* Welcome traveller.  Enter your name. *";
+    let center_welcome = std::cmp::max(center_x - (welcome_text.len() / 2) as i32, 0);
     
-    // Tile Database holds the definition of each tile we want to use.
-    let tile_database = tile::build_tile_database();
-
-    // The Tile Map holds the terrain data for each square on the map.
-    let mut tile_map = tile_map::load_map("maps/test.map".to_string(), &tile_database);
-
-    let mut game_camera = camera::Camera::new();
-    camera::update_camera(&mut game_camera, &game_window, &creatures_on_map[0], &tile_map);
-
-
+    let name_field     = "Name:";
     
-    
-    // Game Loop:  Get Input, Process Input, Process All Events.
-    while !end_game
+    // Clear and redraw the screen.
+    game_window.erase();
+    game_window.refresh();
+
+    if pancurses::can_change_color()
     {
-        match game_mode
+        pancurses::init_pair(1, pancurses::COLOR_WHITE, pancurses::COLOR_BLACK);
+        game_window.color_set(1);
+    }
+
+    game_window.mvprintw(start_y,     center_welcome, welcome_dots);
+    game_window.mvprintw(start_y + 1, center_welcome, welcome_text);
+    game_window.mvprintw(start_y + 2, center_welcome, welcome_dots);
+
+
+    let max_chars = 8 as u8;
+    let x_off     = center_welcome as u8;
+    let y_off     = (start_y + 4) as u8;
+    let prompt    = "Name: ".to_string();
+    
+    let name_str = textwriter::TextWriter::run(max_chars,       // max_len
+                                               prompt,          // prompt
+                                               true,            // allow_nums
+                                               true,            // allow_chars
+                                               true,            // allow_special
+                                               x_off,           // start_x
+                                               y_off,           // start_y
+                                               game_window);    // game_window
+
+    // Assign the name to the new character.
+    // TODO:  Allow the user to back out to the main menu.
+    match name_str
+    {
+        Some(x) =>
         {
-            mode::Mode::Adventure =>
-            {
-                adventure_iter(&game_window,
-                               &mut game_camera,
-                               &mut tile_map,
-                               &mut creatures_on_map,
-                               &mut console_buffer,
-                               &mut game_mode,
-                               &mut end_game);
-
-            },
-            
-            mode::Mode::Inventory =>
-            {
-                inventory_iter(&game_window,
-                               &mut creatures_on_map[0],
-                               &mut console_buffer);
-            }
-
-
-        } // End Match game_mode.
-
-        
-        std::thread::sleep(std::time::Duration::from_millis(100));
-    } // End Game Loop.
-
-    shut_down_game();
-} // End Main.
-
-fn adventure_iter(game_window       : &pancurses::Window,
-                  game_camera       : &mut camera::Camera,
-                  tile_map          : &mut tile_map::TileMap,
-                  creatures_on_map  : &mut Vec<creature::Creature>,
-                  console_buffer    : &mut Vec<String>,
-                  game_mode         : &mut mode::Mode,
-                  end_game          : &mut bool)
-{
-    camera::draw_screen(&game_window,
-                        &game_camera,
-                        &tile_map,
-                        &creatures_on_map,
-                        console_buffer);	// Draw the Screen.
+            character.set_name(x);
+        }
+        None =>
+        {
+            // Returning the default character should be a sign that
+            // We did not finish the chargen.
+            return character;
+        }
+    }
     
-    let game_action = input::process_keyboard(&game_window); // Listen for a key and turn it into an action.
-    action::do_action(&game_action,
-                      game_window,
-                      tile_map,
-                      game_mode,
-                      &mut creatures_on_map[0],
-                      end_game,
-                      console_buffer);   // Process the game action.
+
+    let welcome_dots   = "***********************************************";
+    let welcome_text   = "* Welcome traveller.  Choose your attributes. *";
+    let center_welcome = std::cmp::max(center_x - (welcome_text.len() / 2) as i32, 0);
+
+    game_window.mvprintw(start_y,     center_welcome, welcome_dots);
+    game_window.mvprintw(start_y + 1, center_welcome, welcome_text);
+    game_window.mvprintw(start_y + 2, center_welcome, welcome_dots);
+
     
-    camera::update_camera(game_camera, game_window, &mut creatures_on_map[0], tile_map);
-} // End adventure_iter.
+    let attributes = attributeslider::AttributeSlider::run(x_off + 3, y_off + 3, game_window);
 
-
-fn inventory_iter(game_window        : &pancurses::Window,
-                  mut player         : &mut creature::Creature,
-                  mut console_buffer : &mut Vec<String>)
-{
-    inventory_screen::draw_screen(&game_window,
-                                  &mut player,
-                                  &mut console_buffer);
-    let inventory_action = inventory_screen::process_keyboard(&game_window); // Listen for a key and turn it into an action.
+    // Assign the attributes to the new character.
+    character.set_creativity(attributes.0 as u32);
+    character.set_focus(attributes.1 as u32);
+    character.set_memory(attributes.2 as u32);
     
-} // End inventory_iter.
 
-fn initialize_game() -> pancurses::Window
-{
-    let game_window = pancurses::initscr(); // Create a new window.
-    pancurses::cbreak();		    // Allow one-character-at-a-time.
-    pancurses::noecho();		    // Suppress echoing of characters.
-    game_window.keypad(true);		    // Set Keypad mode.
-    game_window.nodelay(false);		    // Set delay mode.
-    pancurses::curs_set(0);                 // Disable cursor blinking.
-    game_window				    // Return the window we initialized.     
-}
+    // Clear and redraw the screen.
+    game_window.erase();
+    game_window.refresh();
+    
+    if pancurses::can_change_color()
+    {
+        pancurses::init_pair(1, pancurses::COLOR_WHITE, pancurses::COLOR_BLACK);
+        game_window.color_set(1);
+    }
+   
+    let confirm_dots   = "******************************************";
+    let confirm_text   = "* Press any key to begin your adventure. *";
+    let center_confirm = std::cmp::max(center_x - (welcome_text.len() / 2) as i32, 0);
 
-fn shut_down_game()
-{
-    pancurses::use_default_colors();        // Make sure the terminal colors are reset.
-    pancurses::endwin();	            // End the window when we are done.
-}
+    game_window.getch();
 
-fn blow_up()
-{
-    shut_down_game();                       // Shut down the pancurses window.
-    assert!(false);                         // We will now crash the game.
+    // return the new character.
+    character
 }

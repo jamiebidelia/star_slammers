@@ -1,20 +1,17 @@
-
-
 /*
-_____ _                _____ _                                                      
-/ ____| |              / ____| |                                        _            
-| (___ | |_ __ _ _ __  | (___ | | __ _ _ __ ___  _ __ ___   ___ _ __ ___(_)           
-\___ \| __/ _` | '__|  \___ \| |/ _` | '_ ` _ \| '_ ` _ \ / _ \ '__/ __|             
-____) | || (_| | |     ____) | | (_| | | | | | | | | | | |  __/ |  \__ \_            
-|_____/ \__\__,_|_|    |_____/|_|\__,_|_| |_| |_|_| |_| |_|\___|_|  |___(_)           
-_____        __ _       _ _                     _                 _                  
-|_   _|      / _(_)     (_) |           /\      | |               | |                 
-| |  _ __ | |_ _ _ __  _| |_ ___     /  \   __| |_   _____ _ __ | |_ _   _ _ __ ___ 
-| | | '_ \|  _| | '_ \| | __/ _ \   / /\ \ / _` \ \ / / _ \ '_ \| __| | | | '__/ _ \
-_| |_| | | | | | | | | | | ||  __/  / ____ \ (_| |\ V /  __/ | | | |_| |_| | | |  __/
-|_____|_| |_|_| |_|_| |_|_|\__\___| /_/    \_\__,_| \_/ \___|_| |_|\__|\__,_|_|  \___|
+   _____ _                _____ _                                                      
+  / ____| |              / ____| |                                        _            
+ | (___ | |_ __ _ _ __  | (___ | | __ _ _ __ ___  _ __ ___   ___ _ __ ___(_)           
+  \___ \| __/ _` | '__|  \___ \| |/ _` | '_ ` _ \| '_ ` _ \ / _ \ '__/ __|             
+  ____) | || (_| | |     ____) | | (_| | | | | | | | | | | |  __/ |  \__ \_            
+ |_____/ \__\__,_|_|    |_____/|_|\__,_|_| |_| |_|_| |_| |_|\___|_|  |___(_)           
+  _____        __ _       _ _                     _                 _                  
+ |_   _|      / _(_)     (_) |           /\      | |               | |                 
+   | |  _ __ | |_ _ _ __  _| |_ ___     /  \   __| |_   _____ _ __ | |_ _   _ _ __ ___ 
+   | | | '_ \|  _| | '_ \| | __/ _ \   / /\ \ / _` \ \ / / _ \ '_ \| __| | | | '__/ _ \
+  _| |_| | | | | | | | | | | ||  __/  / ____ \ (_| |\ V /  __/ | | | |_| |_| | | |  __/
+ |_____|_| |_|_| |_|_| |_|_|\__\___| /_/    \_\__,_| \_/ \___|_| |_|\__|\__,_|_|  \___|
  */
-
 
 #![allow(non_snake_case)]
 
@@ -42,6 +39,7 @@ mod creature;
 mod action;
 mod direction;
 mod camera;
+mod chargen;
 mod menuaction;
 mod tile;
 mod tile_map;
@@ -52,12 +50,14 @@ mod mode;
 mod inventory_screen;
 mod rng;
 mod skill;
+mod textwriter;
+mod attributeslider;
 mod title;
+
 
 /// Starts the game
 fn main()
 {
-    let mut game_mode = mode::Mode::Adventure;
     let game_window   = initialize_game();   
     let mut end_game  = false;
 
@@ -67,20 +67,18 @@ fn main()
     let mut game_mode           = mode::Mode::TitleScreen;
     enter_title_mode(&mut game_mode);
 
-    let mut player = creature::Creature::new();
-    player.set_name("Avatar Steve".to_string());
-    player.set_player_control(true);
-    player.set_image('H');
-    player.set_x_pos(0);
-    player.set_y_pos(0);
-
+    // The default player will be replaced by either character creation
+    // Or by loading a character file.  If we ever see the default player
+    // In real gameplay, we should try to debug that.
+    let mut player = creature::Creature::Default_Player();
+    
     // Creatures on Map contains each creature that is in this area.
+    // The player character is always index 0.
     let mut creatures_on_map: Vec<creature::Creature> = Vec::new();
     creatures_on_map.push(player);
     
     // The Console Buffer will hold the messages that we want to display.
     let mut console_buffer : Vec<String> = Vec::new();
-
     
     // Tile Database holds the definition of each tile we want to use.
     let tile_database = tile::build_tile_database();
@@ -128,6 +126,13 @@ fn main()
                            &mut menu_cursor,
                            &main_menu);
             },
+            mode::Mode::CharGen =>
+            {
+                chargen_iter(&game_window,
+                             &mut game_mode,
+                             &mut creatures_on_map[0]);
+            }
+            
 
             mode::Mode::Quit =>
             {
@@ -176,11 +181,7 @@ fn adventure_iter(game_window       : &pancurses::Window,
                       &mut creatures_on_map[0],
                       end_game,
                       console_buffer);      // Process the game action.
-    
-    camera::update_camera(game_camera,
-                          game_window,
-                          &creatures_on_map[0],
-                          tile_map);
+
 } // End adventure_iter.
 
 /// In Inventory Mode, each iteration handles player input for changing gear,
@@ -215,12 +216,24 @@ fn title_iter(game_window  : &pancurses::Window,
     // Listen for a key and turn it into an action.
     let menu_action = title::process_keyboard(&game_window);
     
-    // For now just discard the action.
     menuaction::do_action(game_mode,
                           &menu_action,
                           menu_cursor,
                           menu);
 }
+
+
+/// In CharGen Mode, we get the name and attributes of the character.
+/// Mode automatically transitions to Adventure mode afterward.
+/// TODO:  be able to back out of this to the main menu.
+fn chargen_iter(game_window : &pancurses::Window,
+                game_mode   : &mut mode::Mode,
+                player      : &mut creature::Creature)
+{
+    *player    = chargen::do_chargen(game_window);
+    *game_mode = mode::Mode::Adventure;
+}
+
 
 /// Gets PanCurses up and running and accepts keyboard input.
 fn initialize_game() -> pancurses::Window
@@ -242,8 +255,8 @@ fn shut_down_game()
 }
 
 /// Shuts the game down properly before causing an assertion.
-fn blow_up()
+fn blow_up(err : String)
 {
-    shut_down_game();                       // Shut down the pancurses window.
-    panic!();                               // We will now crash the game.
+    shut_down_game();                          // Shut down the pancurses window.
+    panic!(err);                               // We will now crash the game.
 }
