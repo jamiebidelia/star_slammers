@@ -25,25 +25,12 @@ use crate::mode;
 use crate::attributeslider;
 use crate::textwriter;
 
-// The state machine here should be fairly linear.
-// We want to proceed sequentially through the choices
-enum CharGenStates
-{
-    WelcomeText,
-    EnterName,
-    PickPronouns,
-    PickStats,
-    ConfirmText
-}
 
-
-pub fn draw_state(game_window : &pancurses::Window)
+pub fn do_chargen(game_window : &pancurses::Window) -> creature::Creature
 {
-   EnterName(game_window);
-}
 
-pub fn EnterName(game_window : &pancurses::Window)
-{
+    let mut character = creature::Creature::Default_Player();
+    
     // The max values it gives are not printable.  So we need to
     // Subtract 1 from each to reach our last index.  Be mindful of that.
     let start_x = game_window.get_beg_x();
@@ -89,6 +76,22 @@ pub fn EnterName(game_window : &pancurses::Window)
                                                y_off,           // start_y
                                                game_window);    // game_window
 
+    // Assign the name to the new character.
+    // TODO:  Allow the user to back out to the main menu.
+    match name_str
+    {
+        Some(x) =>
+        {
+            character.set_name(x);
+        }
+        None =>
+        {
+            // Returning the default character should be a sign that
+            // We did not finish the chargen.
+            return character;
+        }
+    }
+    
 
     let welcome_dots   = "***********************************************";
     let welcome_text   = "* Welcome traveller.  Choose your attributes. *";
@@ -101,20 +104,28 @@ pub fn EnterName(game_window : &pancurses::Window)
     
     let attributes = attributeslider::AttributeSlider::run(x_off + 3, y_off + 3, game_window);
 
-    // This is a TODO:  Remove section that exists just to keep track of where
-    // we are in the overall character creation code creation process.
-    game_window.mvprintw(15, 2, "NEXT");
-}
-
-
-pub fn process_keyboard(game_window : &pancurses::Window) ->
-    menuaction::MenuAction
-{
-    game_window.getch();
+    // Assign the attributes to the new character.
+    character.set_creativity(attributes.0 as u32);
+    character.set_focus(attributes.1 as u32);
+    character.set_memory(attributes.2 as u32);
     
-    menuaction::MenuAction::Invalid
-}
 
-pub fn do_action()
-{
+    // Clear and redraw the screen.
+    game_window.erase();
+    game_window.refresh();
+    
+    if pancurses::can_change_color()
+    {
+        pancurses::init_pair(1, pancurses::COLOR_WHITE, pancurses::COLOR_BLACK);
+        game_window.color_set(1);
+    }
+   
+    let confirm_dots   = "******************************************";
+    let confirm_text   = "* Press any key to begin your adventure. *";
+    let center_confirm = std::cmp::max(center_x - (welcome_text.len() / 2) as i32, 0);
+
+    game_window.getch();
+
+    // return the new character.
+    character
 }

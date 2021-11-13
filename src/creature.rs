@@ -135,6 +135,36 @@ impl Creature {
         self.y_pos = new_y_pos;
     }
 
+    pub fn set_creativity(&mut self, new_creativity : u32)
+    {
+        self.creativity = new_creativity;
+    }
+    
+    pub fn get_creativity(&self) -> &u32
+    {
+        &self.creativity
+    }
+    pub fn set_focus(&mut self, new_focus : u32)
+    {
+        self.focus = new_focus;
+    }
+    
+    pub fn get_focus(&self) -> &u32
+    {
+        &self.focus
+    }
+        
+    pub fn set_memory(&mut self, new_memory : u32)
+    {
+        self.memory = new_memory;
+    }
+    
+    pub fn get_memory(&self) -> &u32
+    {
+        &self.memory
+    }
+
+    
     pub fn get_image(&self) -> &char {
         &self.image
     }

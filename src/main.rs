@@ -223,18 +223,15 @@ fn title_iter(game_window  : &pancurses::Window,
 }
 
 
-/// In CharGen Mode, each iteration moves us through the state machine.
-/// It also draws the customization menus and handles player input.
+/// In CharGen Mode, we get the name and attributes of the character.
+/// Mode automatically transitions to Adventure mode afterward.
+/// TODO:  be able to back out of this to the main menu.
 fn chargen_iter(game_window : &pancurses::Window,
                 game_mode   : &mut mode::Mode,
                 player      : &mut creature::Creature)
 {
-    chargen::draw_state(game_window);
-
-    let menu_action = chargen::process_keyboard(&game_window);
-
-    chargen::do_action();
-    
+    *player    = chargen::do_chargen(game_window);
+    *game_mode = mode::Mode::Adventure;
 }
 
 

@@ -30,6 +30,7 @@ pub enum SliderAction
     Decrement,
     Resize,
     Back,
+    Done,
     Invalid
 }
 
@@ -109,6 +110,7 @@ pub struct AttributeSlider
     points_left : u8,
     start_x     : u8,
     start_y     : u8,
+    done        : bool,
 }
 
 
@@ -174,6 +176,9 @@ impl AttributeSlider
     /// no bounds checking or validity checks on if the action can be performed.
     fn process_keyboard(&mut self, game_window : &pancurses::Window) -> SliderAction
     {
+
+        let ENTER : char = '\n';
+        let ESC   : char = '\x1B';
         
         let mut the_action = SliderAction::Invalid;
 
@@ -198,6 +203,17 @@ impl AttributeSlider
             Some(pancurses::Input::KeyLeft) =>
             {
                 the_action = SliderAction::Decrement;
+            }
+            Some(pancurses::Input::Character(key)) =>
+            {
+                if key == ESC
+                {
+                    the_action = SliderAction::Back;
+                }
+                if key == ENTER
+                {
+                    the_action = SliderAction::Done;
+                }
             }
             Some(_) => {} // Do nothing;
             None    => {} // Do nothing;
@@ -254,9 +270,17 @@ impl AttributeSlider
             {
                 // Do nothing;
             }
+            SliderAction::Done =>
+            {
+                if self.points_left == 0
+                {
+                    self.done = true;
+                }
+            }
             SliderAction::Back =>
             {
                 // Do nothing;
+                // TODO: Make this go back to the Name Entry point.
             }
             SliderAction::Invalid =>
             {
@@ -267,7 +291,7 @@ impl AttributeSlider
     
     fn input_loop(&mut self, game_window : &pancurses::Window)
     {
-        while(true)
+        while(self.done == false)
         {
             // First let's draw what we have.
             self.draw(game_window);
@@ -315,7 +339,8 @@ impl AttributeSlider
             cursor_pos  : 0,
             points_left : 5,
             start_x     : start_x,
-            start_y     : start_y 
+            start_y     : start_y,
+            done        : false
         };
 
         slider.input_loop(game_window);
