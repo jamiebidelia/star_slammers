@@ -260,7 +260,7 @@ pub fn draw_screen(
     let map_end_x = get_map_end_x(&game_window);
     let map_end_y = get_map_end_y(&game_window);
 
-    if pancurses::can_change_color() {
+    if pancurses::can_change_color(){
         pancurses::init_pair(1, pancurses::COLOR_WHITE, pancurses::COLOR_BLACK);
         game_window.color_set(1);
     }
