@@ -101,6 +101,8 @@ pub fn EnterName(game_window : &pancurses::Window)
     
     let attributes = attributeslider::AttributeSlider::run(x_off + 3, y_off + 3, game_window);
 
+    // This is a TODO:  Remove section that exists just to keep track of where
+    // we are in the overall character creation code creation process.
     game_window.mvprintw(15, 2, "NEXT");
 }
 

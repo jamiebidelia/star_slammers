@@ -21,6 +21,19 @@
 
 extern crate pancurses;
 
+
+pub enum SliderAction
+{
+    CursorUp,
+    CursorDown,
+    Increment,
+    Decrement,
+    Resize,
+    Back,
+    Invalid
+}
+
+
 /// Attribute composes the base unit of an attribute slider.
 pub struct Attribute
 {
@@ -105,6 +118,7 @@ impl AttributeSlider
     fn draw(&self, game_window : &pancurses::Window)
     {
         let CURSOR        = "-->";
+        let NO_CURSOR     = "   ";
         let CURSOR_OFFSET = 4;
         let NUM_OFFSET    = 20;
         
@@ -114,11 +128,18 @@ impl AttributeSlider
             let val = self.attributes[i].value;
             
             // Print the cursor, if on the correct line.
-            if (self.cursor_pos == i as u8)
+            if self.cursor_pos == i as u8
             {
                 game_window.mvprintw((self.start_y + i as u8)       as i32,
                                      (self.start_x - CURSOR_OFFSET) as i32,
                                      CURSOR);
+            }
+            else
+            {
+                game_window.mvprintw((self.start_y + i as u8)       as i32,
+                                     (self.start_x - CURSOR_OFFSET) as i32,
+                                     NO_CURSOR);
+                
             }
 
             // Print the attribute's name.
@@ -132,9 +153,9 @@ impl AttributeSlider
                                  val.to_string());
         }
 
-        let REMAINING_Y = (self.start_y as i32 +
-                           self.attributes.len() as i32 +
-                           1);
+        let REMAINING_Y = self.start_y as i32 +
+                          self.attributes.len() as i32 +
+                          1;
         
         let POINTS_REM  = "Points Remaining";
         let REMAINING   = self.points_left.to_string();
@@ -148,12 +169,117 @@ impl AttributeSlider
                              REMAINING);
     }
 
-    
-    fn input_loop(&self, game_window : &pancurses::Window)
+
+    /// process_keyboard transforms keypresess into SliderActions.  It does
+    /// no bounds checking or validity checks on if the action can be performed.
+    fn process_keyboard(&mut self, game_window : &pancurses::Window) -> SliderAction
     {
-        //First let's draw what we have.
-        self.draw(game_window);
+        
+        let mut the_action = SliderAction::Invalid;
+
+        match game_window.getch()
+        {
+            Some(pancurses::Input::KeyResize) =>
+            {
+                the_action = SliderAction::Resize;
+            }
+            Some(pancurses::Input::KeyUp) =>
+            {
+                the_action = SliderAction::CursorUp;
+            }
+            Some(pancurses::Input::KeyDown) =>
+            {
+                the_action = SliderAction::CursorDown;
+            }
+            Some(pancurses::Input::KeyRight) =>
+            {
+                the_action = SliderAction::Increment;
+            }
+            Some(pancurses::Input::KeyLeft) =>
+            {
+                the_action = SliderAction::Decrement;
+            }
+            Some(_) => {} // Do nothing;
+            None    => {} // Do nothing;
+        }
+
+        the_action
     }
+
+    /// process_action mutates the AttributeSlider based on the provided
+    /// SliderAction.
+    fn process_action(&mut self,
+                      the_action : SliderAction)
+    {
+        match the_action
+        {
+            SliderAction::CursorUp =>
+            {
+                if self.cursor_pos == 0
+                {
+                    self.cursor_pos = self.attributes.len() as u8 - 1;
+                }
+                else
+                {
+                    self.cursor_pos = self.cursor_pos - 1;
+                }
+            }
+            SliderAction::CursorDown =>
+            {
+                if self.cursor_pos == self.attributes.len() as u8 - 1
+                {
+                    self.cursor_pos = 0;
+                }
+                else
+                {
+                    self.cursor_pos = self.cursor_pos + 1;
+                }
+            }
+            SliderAction::Increment =>
+            {
+                if self.points_left > 0 &&
+                   self.attributes[self.cursor_pos as usize].increment() == true
+                {
+                    self.points_left = self.points_left - 1;
+                }
+            }
+            SliderAction::Decrement =>
+            {
+                if self.attributes[self.cursor_pos as usize].decrement() == true
+                {
+                    self.points_left = self.points_left + 1;
+                }
+            }
+            SliderAction::Resize =>
+            {
+                // Do nothing;
+            }
+            SliderAction::Back =>
+            {
+                // Do nothing;
+            }
+            SliderAction::Invalid =>
+            {
+                // Do nothing;
+            }
+        }
+    }
+    
+    fn input_loop(&mut self, game_window : &pancurses::Window)
+    {
+        while(true)
+        {
+            // First let's draw what we have.
+            self.draw(game_window);
+            
+            // Then, get a keyboard command from the player.
+            let the_action = self.process_keyboard(game_window);
+
+            // Change state based on the action (and move the_action).
+            self.process_action(the_action);
+        }
+    }
+
     
     pub fn run(start_x     : u8,
                start_y     : u8,
