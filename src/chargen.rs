@@ -34,15 +34,12 @@ pub fn do_chargen(game_window : &pancurses::Window) -> creature::Creature
     let end_x   = game_window.get_max_x();
 
     let start_y = game_window.get_beg_y();
-    let end_y   = game_window.get_max_y();
-
+    
     let center_x = (end_x + start_x) / 2;
 
     let welcome_dots   = "****************************************";
     let welcome_text   = "* Welcome traveller.  Enter your name. *";
     let center_welcome = std::cmp::max(center_x - (welcome_text.len() / 2) as i32, 0);
-    
-    let name_field     = "Name:";
     
     // Clear and redraw the screen.
     game_window.erase();
@@ -121,6 +118,11 @@ pub fn do_chargen(game_window : &pancurses::Window) -> creature::Creature
     let confirm_text   = "* Press any key to begin your adventure. *";
     let center_confirm = std::cmp::max(center_x - (welcome_text.len() / 2) as i32, 0);
 
+
+    game_window.mvprintw(start_y,     center_welcome, confirm_dots);
+    game_window.mvprintw(start_y + 1, center_welcome, confirm_text);
+    game_window.mvprintw(start_y + 2, center_welcome, confirm_dots);
+    
     game_window.getch();
 
     // return the new character.
