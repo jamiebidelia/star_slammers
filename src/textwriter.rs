@@ -132,7 +132,7 @@ impl TextWriter
         }
     }
     
-    pub fn input_key(&mut self, game_window : &pancurses::Window) -> KeyType
+    fn input_key(&mut self, game_window : &pancurses::Window) -> KeyType
     {
         let input = game_window.getch();
         
