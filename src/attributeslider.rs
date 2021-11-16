@@ -291,7 +291,7 @@ impl AttributeSlider
     
     fn input_loop(&mut self, game_window : &pancurses::Window)
     {
-        while(self.done == false)
+        while self.done == false
         {
             // First let's draw what we have.
             self.draw(game_window);
