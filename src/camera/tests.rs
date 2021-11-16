@@ -15,11 +15,11 @@
 
 //! This module contains the test code for the camera module.
 
-use crate::camera;
+//use crate::camera;
 
-use crate::creature;
-use crate::tile;
-use crate::tile_map;
+//use crate::creature;
+//use crate::tile;
+//use crate::tile_map;
 
 
 #[cfg(test)]
