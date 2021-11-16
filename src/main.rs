@@ -84,7 +84,7 @@ fn main()
     let tile_database = tile::build_tile_database();
 
     // The Tile Map holds the terrain data for each square on the map.
-    let mut tile_map = tile_map::load_map("maps/test.map".to_string(),
+    let mut tile_map = tile_map::load_map("maps/cave.map".to_string(),
                                           &tile_database);
 
     let mut game_camera = camera::Camera::new();

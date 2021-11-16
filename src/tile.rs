@@ -87,7 +87,12 @@ pub fn build_tile_database() -> [Tile; MAX_TILES]
     tile_database[1].image = 't';
     tile_database[1].passable = false;
 
-    
+    tile_database[2].image = 'X';
+    tile_database[2].passable = false;
+
+    tile_database[3].image = '0';
+    tile_database[3].passable = false;
+   
     tile_database  // Return the tile database.
 }
 
