@@ -257,6 +257,6 @@ fn shut_down_game()
 /// Shuts the game down properly before causing an assertion.
 fn blow_up(err : String)
 {
-    shut_down_game();                          // Shut down the pancurses window.
-    panic!(err);                               // We will now crash the game.
+    shut_down_game();                       // Shut down the pancurses window.
+    panic!("{}", err);                      // We will now crash the game.
 }
