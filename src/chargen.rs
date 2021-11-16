@@ -18,11 +18,8 @@
 
 extern crate pancurses;
 
-use crate::creature;
-use crate::menuaction;
-use crate::mode;
-
 use crate::attributeslider;
+use crate::creature;
 use crate::textwriter;
 
 
