@@ -36,6 +36,7 @@ extern crate pancurses;
 
 mod item;
 mod creature;
+mod stock_creatures;
 mod action;
 mod direction;
 mod camera;
@@ -71,11 +72,22 @@ fn main()
     // Or by loading a character file.  If we ever see the default player
     // In real gameplay, we should try to debug that.
     let mut player = creature::Creature::Default_Player();
+
+    // The default creatures are used if no data files exist to overwrite them.
+    // Data files are a TODO.
+    let mut default_creatures = stock_creatures::default_creature_vector();
     
     // Creatures on Map contains each creature that is in this area.
     // The player character is always index 0.
     let mut creatures_on_map: Vec<creature::Creature> = Vec::new();
     creatures_on_map.push(player);
+
+
+    // TESTING:  Grab a creature from the default list and place it on the map.
+    //let mut brain_dog = default_creatures[1];
+    //brain_dog.set_x_pos(20);
+    //brain_dog.set_y_pos(20);
+    //creatures_on_map.push(brain_dog);
     
     // The Console Buffer will hold the messages that we want to display.
     let mut console_buffer : Vec<String> = Vec::new();

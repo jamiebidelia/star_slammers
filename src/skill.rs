@@ -14,7 +14,6 @@
 */
 
 
-#![doc(html_no_source)]
 #![allow(non_snake_case)]
 //! This module handles skill interpretation and use.
 

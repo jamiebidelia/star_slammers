@@ -13,7 +13,6 @@
  |_____|_| |_|_| |_|_| |_|_|\__\___| /_/    \_\__,_| \_/ \___|_| |_|\__|\__,_|_|  \___|
 */
 
-#![doc(html_no_source)]
 #![allow(non_snake_case)]
 //! This module encompasses a creature:  the player, NPCs, and monsters qualify as creatures.
 
@@ -22,7 +21,8 @@ use crate::rng;
 use crate::skill;
 
 /// The Creature represents all entities that can move and act.
-pub struct Creature {
+pub struct Creature
+{
     name: String,
     x_pos: u32,
     y_pos: u32,
@@ -164,6 +164,65 @@ impl Creature {
         &self.memory
     }
 
+    pub fn set_max_health(&mut self, new_health : u32)
+    {
+        self.max_health = new_health;
+    }
+
+    pub fn get_max_health(&self) -> &u32
+    {
+        &self.max_health
+    }
+
+    pub fn set_current_health(&mut self, new_health : u32)
+    {
+        self.current_health = new_health;
+    }
+
+    pub fn get_current_health(&self) -> &u32
+    {
+        &self.current_health
+    }
+
+    pub fn set_max_fatigue(&mut self, new_fatigue : u32)
+    {
+        self.max_fatigue = new_fatigue;
+    }
+
+    pub fn get_max_fatigue(&self) -> &u32
+    {
+        &self.max_fatigue
+    }
+
+    pub fn set_current_fatigue(&mut self, new_fatigue : u32)
+    {
+        self.current_fatigue = new_fatigue;
+    }
+
+    pub fn get_current_fatigue(&self) -> &u32
+    {
+        &self.current_fatigue
+    }
+
+    pub fn set_max_sanity(&mut self, new_sanity : u32)
+    {
+        self.max_sanity = new_sanity;
+    }
+
+    pub fn get_max_sanity(&self) -> &u32
+    {
+        &self.max_sanity
+    }
+
+    pub fn set_current_sanity(&mut self, new_sanity : u32)
+    {
+        self.current_sanity = new_sanity;
+    }
+
+    pub fn get_current_sanity(&self) -> &u32
+    {
+        &self.current_sanity
+    }
     
     pub fn get_image(&self) -> &char {
         &self.image
@@ -190,7 +249,7 @@ impl Creature {
     pub fn get_endurance(&self) -> &u32 {
         return &self.endurance;
     }
-    pub fn set_endurnace(&mut self, new_endurance: u32) {
+    pub fn set_endurance(&mut self, new_endurance: u32) {
         self.endurance = new_endurance;
     }
     pub fn get_nullification(&self) -> &u32 {
@@ -198,6 +257,20 @@ impl Creature {
     }
     pub fn set_nullification(&mut self, new_nullification: u32) {
         self.nullification = new_nullification;
+    }
+
+    pub fn set_experience_have(&mut self, new_exp : u32)
+    {
+        self.experience_have = new_exp;
+    }
+    pub fn get_experience_have(&self)->&u32
+    {
+        &self.experience_have
+    }
+
+    pub fn new_inventory(&mut self)
+    {
+        self.inventory = Vec::new();
     }
 
     pub fn use_skill(
