@@ -350,3 +350,42 @@ impl Creature {
         return the_rng.roll_skill_check(stat1, stat2, stat3, defense);
     }
 } // End Creature Implementation.
+
+impl Clone for Creature
+{
+    fn clone(&self) -> Creature
+    {
+        
+        let mut the_copy = Creature::new();
+        
+        the_copy.name            = self.name.clone();
+        the_copy.x_pos           = self.x_pos;
+        the_copy.y_pos           = self.y_pos;
+        
+        the_copy.creativity      = self.creativity;
+        the_copy.focus           = self.focus;
+        the_copy.memory          = self.memory;
+        
+        the_copy.max_health      = self.max_health;
+        the_copy.current_health  = self.current_health;
+        
+        the_copy.max_fatigue     = self.max_fatigue;
+        the_copy.current_fatigue = self.current_fatigue;
+        
+        the_copy.max_sanity      = self.max_sanity;
+        the_copy.current_sanity  = self.current_sanity;
+        
+        the_copy.evasion         = self.evasion;
+        the_copy.endurance       = self.endurance;
+        the_copy.nullification   = self.nullification;
+        
+        the_copy.experience_have = self.experience_have;
+        the_copy.image           = self.image;
+        the_copy.player_control  = self.player_control;
+        
+        the_copy.inventory       = self.inventory.clone();
+        
+        // Return the copy.
+        the_copy
+    }
+}

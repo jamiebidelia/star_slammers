@@ -82,12 +82,11 @@ fn main()
     let mut creatures_on_map: Vec<creature::Creature> = Vec::new();
     creatures_on_map.push(player);
 
-
     // TESTING:  Grab a creature from the default list and place it on the map.
-    //let mut brain_dog = default_creatures[1];
-    //brain_dog.set_x_pos(20);
-    //brain_dog.set_y_pos(20);
-    //creatures_on_map.push(brain_dog);
+    let mut brain_dog = default_creatures[1].clone();
+    brain_dog.set_x_pos(20);
+    brain_dog.set_y_pos(20);
+    creatures_on_map.push(brain_dog);
     
     // The Console Buffer will hold the messages that we want to display.
     let mut console_buffer : Vec<String> = Vec::new();
