@@ -23,36 +23,41 @@ use crate::skill;
 /// The Creature represents all entities that can move and act.
 pub struct Creature
 {
-    name: String,
-    x_pos: u32,
-    y_pos: u32,
+    name:            String,
+    x_pos:           u32,
+    y_pos:           u32,
 
-    creativity: u32,
-    focus: u32,
-    memory: u32,
+    creativity:      u32,
+    focus:           u32,
+    memory:          u32,
 
-    max_health: u32,
-    current_health: u32,
+    max_health:      u32,
+    current_health:  u32,
 
-    max_fatigue: u32,
+    max_fatigue:     u32,
     current_fatigue: u32,
 
-    max_sanity: u32,
-    current_sanity: u32,
+    max_sanity:      u32,
+    current_sanity:  u32,
 
-    evasion: u32,
-    endurance: u32,
-    nullification: u32,
+    evasion:         u32,
+    endurance:       u32,
+    nullification:   u32,
 
     experience_have: u32,
-    image: char,
-    player_control: bool,
-    inventory: Vec<item::Item>,
+    image:           char,
+    player_control:  bool,
+    inventory:       Vec<item::Item>,
 }
 
-impl Creature {
-    pub fn new() -> Creature {
-        Creature {
+impl Creature
+{
+
+    /// Provides a new creature with empty fields.
+    pub fn new() -> Creature
+    {
+        Creature
+        {
             name: "Unknown".to_string(),
             x_pos: 0,
             y_pos: 0,
@@ -81,8 +86,12 @@ impl Creature {
         }
     } // End new
 
-    pub fn Default_Player() -> Creature {
-        Creature {
+    /// Provides a new creature with the starting stats of a player, the default
+    /// player ASCII image, and player control enabled.
+    pub fn Default_Player() -> Creature
+    {
+        Creature
+        {
             name: "Default".to_string(),
             x_pos: 0,
             y_pos: 0,
@@ -111,168 +120,233 @@ impl Creature {
         }
     } // End Default_Player
 
-    pub fn get_name(&self) -> &String {
+    /// Getter for name.
+    pub fn get_name(&self) -> &String
+    {
         &self.name
     }
 
-    pub fn set_name(&mut self, new_name: String) {
+    /// Setter for name.
+    pub fn set_name(&mut self, new_name: String)
+    {
         self.name = new_name;
     }
 
-    pub fn get_x_pos(&self) -> &u32 {
+    /// Getter for x_pos.
+    pub fn get_x_pos(&self) -> &u32
+    {
         &self.x_pos
     }
 
-    pub fn set_x_pos(&mut self, new_x_pos: u32) {
+    /// Setter for x_pos.
+    pub fn set_x_pos(&mut self, new_x_pos: u32)
+    {
         self.x_pos = new_x_pos;
     }
 
-    pub fn get_y_pos(&self) -> &u32 {
+    /// Getter for y_pos.
+    pub fn get_y_pos(&self) -> &u32
+    {
         &self.y_pos
     }
 
-    pub fn set_y_pos(&mut self, new_y_pos: u32) {
+    /// Setter for y_pos.
+    pub fn set_y_pos(&mut self, new_y_pos: u32)
+    {
         self.y_pos = new_y_pos;
     }
 
-    pub fn set_creativity(&mut self, new_creativity : u32)
-    {
-        self.creativity = new_creativity;
-    }
-    
+    /// Getter for creativity.
     pub fn get_creativity(&self) -> &u32
     {
         &self.creativity
     }
+
+    /// Setter for creativity.
+    pub fn set_creativity(&mut self, new_creativity : u32)
+    {
+        self.creativity = new_creativity;
+    }
+
+    /// Getter for focus.
+    pub fn get_focus(&self) -> &u32
+    {
+        &self.focus
+    }
+
+    /// Setter for focus.
     pub fn set_focus(&mut self, new_focus : u32)
     {
         self.focus = new_focus;
     }
     
-    pub fn get_focus(&self) -> &u32
-    {
-        &self.focus
-    }
-        
-    pub fn set_memory(&mut self, new_memory : u32)
-    {
-        self.memory = new_memory;
-    }
-    
+
+    /// Getter for memory.
     pub fn get_memory(&self) -> &u32
     {
         &self.memory
     }
 
-    pub fn set_max_health(&mut self, new_health : u32)
+    /// Setter for memory.
+    pub fn set_memory(&mut self, new_memory : u32)
     {
-        self.max_health = new_health;
+        self.memory = new_memory;
     }
+    
 
+    /// Getter for max_health.
     pub fn get_max_health(&self) -> &u32
     {
         &self.max_health
     }
 
-    pub fn set_current_health(&mut self, new_health : u32)
+    /// Setter for max_health.
+    pub fn set_max_health(&mut self, new_health : u32)
     {
-        self.current_health = new_health;
+        self.max_health = new_health;
     }
 
+    /// Getter for current_health.
     pub fn get_current_health(&self) -> &u32
     {
         &self.current_health
     }
 
-    pub fn set_max_fatigue(&mut self, new_fatigue : u32)
+    /// Setter for current_health.
+    pub fn set_current_health(&mut self, new_health : u32)
     {
-        self.max_fatigue = new_fatigue;
+        self.current_health = new_health;
     }
 
+    /// Getter for max_fatigue.
     pub fn get_max_fatigue(&self) -> &u32
     {
         &self.max_fatigue
     }
 
+    /// Setter for max_fatigue.
+    pub fn set_max_fatigue(&mut self, new_fatigue : u32)
+    {
+        self.max_fatigue = new_fatigue;
+    }
+
+    /// Getter for current_fatigue.
+    pub fn get_current_fatigue(&self) -> &u32
+    {
+        &self.current_fatigue
+    }
+    
+    /// Setter for current fatigue.
     pub fn set_current_fatigue(&mut self, new_fatigue : u32)
     {
         self.current_fatigue = new_fatigue;
     }
 
-    pub fn get_current_fatigue(&self) -> &u32
-    {
-        &self.current_fatigue
-    }
-
-    pub fn set_max_sanity(&mut self, new_sanity : u32)
-    {
-        self.max_sanity = new_sanity;
-    }
-
+    /// Getter for max_sanity.
     pub fn get_max_sanity(&self) -> &u32
     {
         &self.max_sanity
     }
 
+    /// Setter for max_sanity.
+    pub fn set_max_sanity(&mut self, new_sanity : u32)
+    {
+        self.max_sanity = new_sanity;
+    }
+
+    /// Getter for current_sanity.
+    pub fn get_current_sanity(&self) -> &u32
+    {
+        &self.current_sanity
+    }
+
+    /// Setter for current_sanity.
     pub fn set_current_sanity(&mut self, new_sanity : u32)
     {
         self.current_sanity = new_sanity;
     }
 
-    pub fn get_current_sanity(&self) -> &u32
+    /// Getter for image.
+    pub fn get_image(&self) -> &char
     {
-        &self.current_sanity
-    }
-    
-    pub fn get_image(&self) -> &char {
         &self.image
     }
 
-    pub fn set_image(&mut self, new_image: char) {
+    /// Setter for image.
+    pub fn set_image(&mut self, new_image: char)
+    {
         self.image = new_image;
     }
 
-    pub fn get_player_control(&self) -> &bool {
+    /// Getter for player_control.
+    pub fn get_player_control(&self) -> &bool
+    {
         &self.player_control
     }
 
-    pub fn set_player_control(&mut self, new_player_control: bool) {
+    /// Setter for player control.
+    pub fn set_player_control(&mut self, new_player_control: bool)
+    {
         self.player_control = new_player_control;
     }
 
-    pub fn get_evasion(&self) -> &u32 {
+    /// Getter for evasion.
+    pub fn get_evasion(&self) -> &u32
+    {
         return &self.evasion;
+
     }
-    pub fn set_evasion(&mut self, new_evasion: u32) {
+
+    /// Setter for evasion.
+    pub fn set_evasion(&mut self, new_evasion: u32)
+    {
         self.evasion = new_evasion;
     }
-    pub fn get_endurance(&self) -> &u32 {
+
+    /// Getter for endurance.
+    pub fn get_endurance(&self) -> &u32
+    {
         return &self.endurance;
     }
-    pub fn set_endurance(&mut self, new_endurance: u32) {
+
+
+    /// Setter for endurance.
+    pub fn set_endurance(&mut self, new_endurance: u32)
+    {
         self.endurance = new_endurance;
     }
-    pub fn get_nullification(&self) -> &u32 {
+
+    /// Getter for nullification.
+    pub fn get_nullification(&self) -> &u32
+    {
         return &self.nullification;
     }
-    pub fn set_nullification(&mut self, new_nullification: u32) {
+
+    /// Setter for nullification.
+    pub fn set_nullification(&mut self, new_nullification: u32)
+    {
         self.nullification = new_nullification;
     }
 
-    pub fn set_experience_have(&mut self, new_exp : u32)
-    {
-        self.experience_have = new_exp;
-    }
-    pub fn get_experience_have(&self)->&u32
+    /// Getter for experience_have.
+        pub fn get_experience_have(&self)->&u32
     {
         &self.experience_have
     }
 
+    /// Setter for experience_have.
+    pub fn set_experience_have(&mut self, new_exp : u32)
+    {
+        self.experience_have = new_exp;
+    }
+
+    /// Creates a new vector of Items.
     pub fn new_inventory(&mut self)
     {
         self.inventory = Vec::new();
     }
 
+    /// This function contains the logic for using a skill.  It is currently inactive.
     pub fn use_skill(
         &self,
         target: &mut Creature,
@@ -351,8 +425,10 @@ impl Creature {
     }
 } // End Creature Implementation.
 
+
 impl Clone for Creature
 {
+    /// Allows the explicit cloning (non-moving) of a Creature.
     fn clone(&self) -> Creature
     {
         

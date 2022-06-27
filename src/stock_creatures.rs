@@ -19,6 +19,8 @@
 
 use crate::creature;
 
+/// Sets all of the fields of a creature's data to defaults, and sets the
+/// image and name as provided by arguments.
 fn pad(obj : &mut creature::Creature, image : char, name : &str)
 {
     obj.set_image(image);
@@ -41,6 +43,8 @@ fn pad(obj : &mut creature::Creature, image : char, name : &str)
 }
 
 
+/// Composes a vector of creatures, using the images and names of the default
+/// creatures for Star Slammers.  Adding their specific stats and skills is a TODO.
 pub fn default_creature_vector() -> Vec<creature::Creature>
 {
     // Create the vector.

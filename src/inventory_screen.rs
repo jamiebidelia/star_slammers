@@ -15,11 +15,14 @@
 
 
 #![allow(non_snake_case)]
+//! This module is mostly a TODO right now.  It comprises the actions and responses that
+//! will occur on the Inventory screen.
 
 extern crate pancurses;
 use crate::action;
 use crate::creature;
 
+/// Stub.
 pub fn process_keyboard(game_window : &pancurses::Window) -> action::Action
 {
     let mut game_action = action::Action::Invalid;

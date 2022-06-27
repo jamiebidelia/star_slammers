@@ -11,19 +11,16 @@
    | | | '_ \|  _| | '_ \| | __/ _ \   / /\ \ / _` \ \ / / _ \ '_ \| __| | | | '__/ _ \
   _| |_| | | | | | | | | | | ||  __/  / ____ \ (_| |\ V /  __/ | | | |_| |_| | | |  __/
  |_____|_| |_|_| |_|_| |_|_|\__\___| /_/    \_\__,_| \_/ \___|_| |_|\__|\__,_|_|  \___|
-*/
+ */
 
-#![doc(html_no_source)]
 #![allow(non_snake_case)]
-//! This module forms the stock creatures that exist in Star Slammers.  They
-//! will be replaceable at a future time with drop-in lua files.
+//! This module allows the game logic in Rust to talk to configurators
+//! and generators in Lua.
 
-use crate::creature;
+extern crate lua;
 
-pub fn default_creature_vector() -> Vec<creature::Creature>
+pub fn create_lua_state() -> lua::State
 {
-    let mut creature_vector = Vec::new();
-
-    // Return the vector of creatures.
-    creature_vector
+    lua::State::new()
 }
+

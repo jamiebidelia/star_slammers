@@ -48,7 +48,7 @@ impl Camera {
         &self.x_pos
     }
 
-    /// Setter for x_pos.  Debating why this is pub / exists.
+    /// Setter for x_pos.
     pub fn set_x_pos(&mut self, new_x_pos: i32) {
         self.x_pos = new_x_pos;
     }
@@ -58,7 +58,7 @@ impl Camera {
         &self.y_pos
     }
 
-    /// Setter for y_pos.  Debating why this is pub / exists.
+    /// Setter for y_pos.
     pub fn set_y_pos(&mut self, new_y_pos: i32) {
         self.y_pos = new_y_pos;
     }
