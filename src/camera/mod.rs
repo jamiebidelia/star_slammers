@@ -239,13 +239,111 @@ fn get_console_end_y(game_window: &pancurses::Window) -> i32 {
     game_window.get_max_y() - 2
 }
 
+
+
+fn get_info_start_x(game_window: &pancurses::Window) -> i32 {get_map_end_x(&game_window) + 2}
+fn get_info_end_x(game_window: &pancurses::Window)   -> i32 {game_window.get_max_x() - 3 }
+fn get_info_start_y(game_window: &pancurses::Window) -> i32 {game_window.get_beg_y() + 2}
+fn get_info_end_y(game_window: &pancurses::Window)   -> i32 {get_map_end_y(&game_window) - 2}
+
+// TODO implement get_info_end_y and allow for scaling of the info pane.
+//fn get_info_end_y(game_window: &pancurses::Window) -> i32 {0}
+
+
+fn draw_info_pane(game_window: &pancurses::Window,
+                  game_camera: &Camera,
+                  info_subject: &creature::Creature)
+{
+    let mut y : i32 = get_info_start_y(game_window);
+    let     x : i32 = get_info_start_x(game_window);
+    let max_y : i32 = get_info_end_y(game_window);
+
+    if y <= max_y
+    {
+        game_window.mvprintw(y, x, info_subject.get_name());
+        y = y + 2;
+    }
+
+    if y <= max_y
+    {
+        // Print the three wellness stats.
+        game_window.mvprintw(y, x, "HEA: ");
+        game_window.mvprintw(y, x + 5, info_subject.get_current_health().to_string());
+        game_window.mvprintw(y, x + 11, "OF");
+        game_window.mvprintw(y, x + 14, info_subject.get_max_health().to_string());
+        y = y + 1;
+    }
+
+    if y <= max_y
+    {
+        game_window.mvprintw(y, x, "FAT: ");
+        game_window.mvprintw(y, x + 5, info_subject.get_current_fatigue().to_string());
+        game_window.mvprintw(y, x + 11, "OF");
+        game_window.mvprintw(y, x + 14, info_subject.get_max_fatigue().to_string());
+        y = y + 1;
+    }
+
+    if y <= max_y
+    {
+        game_window.mvprintw(y, x, "SAN: ");
+        game_window.mvprintw(y, x + 5, info_subject.get_current_sanity().to_string());
+        game_window.mvprintw(y, x + 11, "OF");
+        game_window.mvprintw(y, x + 14, info_subject.get_max_sanity().to_string());
+        y = y + 2;
+    }
+
+    // Print the three defensive stats.
+
+    if y <= max_y
+    {
+        game_window.mvprintw(y, x, "EVA: ");
+        game_window.mvprintw(y, x + 5, info_subject.get_evasion().to_string());
+        y = y + 1;
+    }
+
+    if y <= max_y
+    {
+        game_window.mvprintw(y, x, "END: ");
+        game_window.mvprintw(y, x + 5, info_subject.get_endurance().to_string());
+        y = y + 1;
+    }
+
+    if y <= max_y
+    {
+        game_window.mvprintw(y, x, "NUL: ");
+        game_window.mvprintw(y, x + 5, info_subject.get_nullification().to_string());
+        y = y + 2;
+    }
+
+    // Print the three Slamming stats.
+    if y <= max_y
+    {
+        game_window.mvprintw(y, x, "CRE: ");
+        game_window.mvprintw(y, x + 5, info_subject.get_creativity().to_string());
+        y = y + 1;
+    }
+
+    if y <= max_y
+    {
+        game_window.mvprintw(y, x, "FOC: ");
+        game_window.mvprintw(y, x + 5, info_subject.get_focus().to_string());
+        y = y + 1;
+    }
+
+    if y <= max_y
+    {
+        game_window.mvprintw(y, x, "MEM: ");
+        game_window.mvprintw(y, x + 5, info_subject.get_memory().to_string());
+    }
+}
+
 pub fn draw_screen(
     game_window: &pancurses::Window,
     game_camera: &Camera,
     game_map: &tile_map::TileMap,
     creatures_on_map: &Vec<creature::Creature>,
-    console_buffer: &Vec<String>,
-) {
+    console_buffer: &Vec<String>)
+{
     // The max values it gives are not printable.  So we need to
     // Subtract 1 from each to reach our last index.  Be mindful of that.
     let start_x = game_window.get_beg_x();
@@ -272,6 +370,9 @@ pub fn draw_screen(
 
     // Redraw the HUD elements console:
     draw_console(&game_window, &console_buffer);
+    draw_controls_pane(&game_window);
+    draw_info_pane(game_window, game_camera, &creatures_on_map[0]);
+
 
     // Draw the borders for the User Interface.
     for y in start_y..end_y {
@@ -287,6 +388,7 @@ pub fn draw_screen(
             }
         }
     }
+
 
     // Draw the camera's view of the Tile Map.
 
@@ -392,4 +494,53 @@ pub fn draw_console(game_window: &pancurses::Window,
             break;
         }
     }
+}
+
+
+fn get_controls_start_x(game_window: &pancurses::Window) -> i32 {get_map_end_x(&game_window) + 2}
+fn get_controls_end_x(game_window: &pancurses::Window)   -> i32 {game_window.get_max_x() - 3}
+fn get_controls_start_y(game_window: &pancurses::Window) -> i32 {get_map_end_y(game_window) + 2}
+fn get_controls_end_y(game_window: &pancurses::Window) -> i32 {game_window.get_max_y() - 2}
+
+pub fn draw_controls_pane(
+    game_window:  &pancurses::Window)
+{
+    let mut y : i32 = get_controls_start_y(game_window);
+    let     x : i32 = get_controls_start_x(game_window);
+    let max_y : i32 = get_controls_end_y(game_window);
+
+    if y <= max_y
+    {
+        game_window.mvprintw(y, x, "Arrow Keys:  Move");
+        y = y + 1;
+    }
+    if y <= max_y
+    {
+        game_window.mvprintw(y, x, "Bump Into:   Use Object or Fight Foe");
+        y = y + 1;
+    }
+    if y <= max_y
+    {
+        game_window.mvprintw(y, x, "I:           Inventory");
+        y = y + 1;
+    }
+    if y <= max_y
+    {
+        game_window.mvprintw(y, x, "Q:           Menu");
+        y = y + 1;
+    }
+    if y <= max_y
+    {
+        game_window.mvprintw(y, x, "L:           Look");
+        y = y + 1;
+    }
+    if y <= max_y
+    {
+        game_window.mvprintw(y, x, "S:           Slam");
+        y = y + 1;
+    }
+
+
+
+
 }

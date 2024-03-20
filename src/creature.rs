@@ -200,6 +200,14 @@ impl Creature {
         self.nullification = new_nullification;
     }
 
+    pub fn get_current_health(&self)  -> &u32 { return &self.current_health;  }
+    pub fn get_current_fatigue(&self) -> &u32 { return &self.current_fatigue; }
+    pub fn get_current_sanity(&self)  -> &u32 { return &self.current_sanity;  }
+
+    pub fn get_max_health(&self)  -> &u32 { return &self.max_health;  }
+    pub fn get_max_fatigue(&self) -> &u32 { return &self.max_fatigue; }
+    pub fn get_max_sanity(&self)  -> &u32 { return &self.max_sanity;  }
+
     pub fn use_skill(
         &self,
         target: &mut Creature,
