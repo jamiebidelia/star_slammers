@@ -113,16 +113,21 @@ pub fn do_chargen(game_window : &pancurses::Window) -> creature::Creature
     // Clear and redraw the screen.
     game_window.erase();
     game_window.refresh();
-    
+
+    // Not yet sure how to make color work.  Tried on Linux and Mac.  TODO.
     if pancurses::can_change_color()
     {
         pancurses::init_pair(1, pancurses::COLOR_WHITE, pancurses::COLOR_BLACK);
         game_window.color_set(1);
     }
-   
+
     let confirm_dots   = "******************************************";
     let confirm_text   = "* Press any key to begin your adventure. *";
     let center_confirm = std::cmp::max(center_x - (welcome_text.len() / 2) as i32, 0);
+
+    game_window.mvprintw(start_y,     center_confirm, confirm_dots);
+    game_window.mvprintw(start_y + 1, center_confirm, confirm_text);
+    game_window.mvprintw(start_y + 2, center_confirm, confirm_dots);
 
     game_window.getch();
 

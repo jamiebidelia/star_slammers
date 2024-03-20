@@ -119,7 +119,7 @@ fn make_move(actor          : &mut creature::Creature,
             }
             else
             {  
-                let message = format!("{}:  Cannot Go East!", actor.get_name());
+                let message = format!("{}:  Cannot Go West!", actor.get_name());
                 console::post_to_console(message, &mut console_buffer);
             },
         direction::Direction::West =>
@@ -130,7 +130,7 @@ fn make_move(actor          : &mut creature::Creature,
             }
             else
             {
-                let message = format!("{}:  Cannot Go West!", actor.get_name());
+                let message = format!("{}:  Cannot Go East!", actor.get_name());
                 console::post_to_console(message, &mut console_buffer);
             }
     } // End match direction.
